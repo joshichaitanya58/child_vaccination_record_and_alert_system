@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const quickButtons = document.querySelectorAll(".quick-btn");
 
     // --- Configuration ---
-    const API_KEY = "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";
+    const API_KEY = "Enter_Your_API_Key";
     const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
     const translations = {
@@ -422,4 +422,5 @@ SPECIAL INSTRUCTIONS:
 
     // Initialize the application
     initializeApp();
+
 });
