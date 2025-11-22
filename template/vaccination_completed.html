@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vaccination Completed</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+    <div style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
+        <h2 style="color: #28a745;">Vaccination Completed!</h2>
+    </div>
+    <div style="padding: 20px 0;">
+        <p>Hello {{ parent_name }},</p>
+        <p>This is to confirm that your child, <strong>{{ child_name }}</strong>, has successfully received their vaccination.</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+            <tr>
+                <td style="padding: 10px; border: 1px solid #eee; background-color: #f9f9f9; font-weight: bold; width: 30%;">Vaccine:</td>
+                <td style="padding: 10px; border: 1px solid #eee;">{{ vaccine_name }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #eee; background-color: #f9f9f9; font-weight: bold;">Date of Vaccination:</td>
+                <td style="padding: 10px; border: 1px solid #eee;">{{ vaccination_date }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #eee; background-color: #f9f9f9; font-weight: bold;">Administered by:</td>
+                <td style="padding: 10px; border: 1px solid #eee;">{{ doctor_name }}</td>
+            </tr>
+        </table>
+        <p style="text-align: center;">You can view and download the official vaccination certificate by clicking the button below:</p>
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ certificate_url }}" style="background-color: #007bff; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                View Certificate
+            </a>
+        </div>
+        <p>This record has been updated in your dashboard. Thank you for keeping your child's health a priority!</p>
+    </div>
+    <div style="text-align: center; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.8em; color: #aaa;">
+        <p>&copy; {{ "now"|format_datetime("%Y") }} Vaccine Track. All rights reserved.</p>
+    </div>
+</body>
+</html>

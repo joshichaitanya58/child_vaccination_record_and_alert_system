@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Vaccination System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS with JIT compiler -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+
+</head>
+
+<body class="text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="{{ url_for('home') }}" class="text-2xl font-bold text-blue-600">
+                <img src="https://placehold.co/40x40/4a90e2/ffffff?text=VT" alt="Logo"
+                    class="inline-block mr-2 rounded-full">
+                <span data-translate="logo">VACCINE TRACK</span>
+            </a>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#home" class="nav-link text-gray-600 hover:text-blue-600 transition-transform duration-300"
+                    data-translate="home">Home</a>
+                <a href="#about" class="nav-link text-gray-600 hover:text-blue-600 transition-transform duration-300"
+                    data-translate="about_us">About Us</a>
+                <a href="#vaccines" class="nav-link text-gray-600 hover:text-blue-600 transition-transform duration-300"
+                    data-translate="vaccines">Vaccines</a>
+                <a href="#contact" class="nav-link text-gray-600 hover:text-blue-600 transition-transform duration-300"
+                    data-translate="contact">Contact</a>
+                <a href="#faq" class="nav-link text-gray-600 hover:text-blue-600 transition-transform duration-300"
+                    data-translate="faq">FAQ</a>
+                <button onclick="showModal('login-modal')"
+                    class="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition-transform duration-300 btn-primary shadow-lg"
+                    data-translate="login">Login</button>
+                <button onclick="showModal('signup-modal')"
+                    class="bg-gray-200 text-gray-800 px-6 py-2 rounded-full font-semibold hover:bg-gray-300 transition-transform duration-300 btn-primary shadow-lg"
+                    data-translate="sign_up">Sign Up</button>
+                <!-- Language Dropdown -->
+                <div class="relative inline-block text-left">
+                    <div>
+                        <button type="button"
+                            class="inline-flex justify-center w-full rounded-full border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+                            id="language-menu-button" aria-expanded="true" aria-haspopup="true" title="Change language">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c1.355 0 2.707-.157 4.018-.452M12 21c-1.355 0-2.707-.157-4.018-.452M3.284 14.252a8.971 8.971 0 010-4.504M20.716 14.252a8.971 8.971 0 000-4.504M3.284 9.748L12 3m8.716 6.748L12 3" />
+                            </svg>
+                            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+                        id="language-menu" role="menu" aria-orientation="vertical"
+                        aria-labelledby="language-menu-button" tabindex="-1">
+                        <div class="py-1" role="none">
+                            <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem"
+                                tabindex="-1" onclick="changeLanguage('en')">English</a>
+                            <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem"
+                                tabindex="-1" onclick="changeLanguage('mr')">मराठी</a>
+                            <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem"
+                                tabindex="-1" onclick="changeLanguage('hi')">हिन्दी</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white px-4 py-2">
+            <a href="#home" class="block py-2 px-4 text-gray-600 hover:bg-gray-100 rounded-md"
+                data-translate="home">Home</a>
+            <a href="#about" class="block py-2 px-4 text-gray-600 hover:bg-gray-100 rounded-md"
+                data-translate="about_us">About Us</a>
+            <a href="#vaccines" class="block py-2 px-4 text-gray-600 hover:bg-gray-100 rounded-md"
+                data-translate="vaccines">Vaccines</a>
+            <a href="#contact" class="block py-2 px-4 text-gray-600 hover:bg-gray-100 rounded-md"
+                data-translate="contact">Contact</a>
+            <a href="#faq" class="block py-2 px-4 text-gray-600 hover:bg-gray-100 rounded-md"
+                data-translate="faq">FAQ</a>
+            <button onclick="showModal('login-modal')"
+                class="w-full text-left py-2 px-4 text-gray-600 hover:bg-gray-100 rounded-md"
+                data-translate="login">Login</button>
+            <button onclick="showModal('signup-modal')"
+                class="w-full text-left py-2 px-4 text-gray-600 hover:bg-gray-100 rounded-md"
+                data-translate="sign_up">Sign Up</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="mt-20">
+
+        <!-- Hero Section -->
+        <section id="home" class="hero-section text-white text-center fade-in">
+            <div class="overlay"></div>
+            <div class="relative z-10 p-6 md:p-12">
+                <h1 class="text-4xl md:text-6xl font-extrabold leading-tight tracking-wide" data-translate="hero_title">
+                    Secure Your Child's Future</h1>
+                <p class="mt-4 text-xl md:text-2xl font-light" data-translate="hero_subtitle">Track vaccinations,
+                    schedule appointments, and manage health records easily.</p>
+                <div class="mt-8 space-x-4">
+                    <button onclick="showModal('signup-modal')"
+                        class="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition-transform duration-300 btn-primary shadow-lg"
+                        data-translate="get_started">Get Started</button>
+                    <button onclick="showModal('login-modal')"
+                        class="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-200 transition-transform duration-300 btn-primary shadow-lg"
+                        data-translate="already_member">Already a Member?</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us Section -->
+        <section id="about" class="py-16 bg-white">
+            <div class="container mx-auto px-4 max-w-5xl">
+                <h2 class="text-4xl font-bold text-center text-blue-600 mb-4" data-translate="about_title">About the
+                    System</h2>
+                <p class="text-center text-gray-600 mb-12" data-translate="about_subtitle">Empowering parents and
+                    doctors with a seamless vaccination tracking solution.</p>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <img src="https://placehold.co/600x400/e9ecef/212529?text=Happy+Family" alt="About Us"
+                            class="rounded-lg shadow-lg w-full">
+                    </div>
+                    <div class="space-y-6">
+                        <p class="text-lg text-gray-700" data-translate="about_p1">The Child Vaccination System is a
+                            digital platform designed to simplify the complex process of child immunization. We provide
+                            a secure, centralized hub where parents can track their child's vaccination history, view
+                            upcoming schedules, and receive timely reminders.</p>
+                        <p class="text-lg text-gray-700" data-translate="about_p2">For healthcare professionals, our
+                            system offers a robust tool to manage parent records, update vaccination statuses, and
+                            communicate effectively with parents. Our goal is to ensure every child receives their
+                            vaccinations on time, contributing to a healthier community.</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600">
+                            <li data-translate="about_li1">Real-time vaccination records</li>
+                            <li data-translate="about_li2">Personalized schedules and reminders</li>
+                            <li data-translate="about_li3">Secure data storage and privacy</li>
+                            <li data-translate="about_li4">Efficient parent management for doctors</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vaccines Section -->
+        <section id="vaccines" class="py-16 bg-gray-100">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <h2 class="text-4xl font-bold text-center text-blue-600 mb-4" data-translate="vaccines_title">Available
+                    Vaccines</h2>
+                <p class="text-center text-gray-600 mb-12" data-translate="vaccines_subtitle">Comprehensive list of
+                    vaccines available in our system.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="vaccines-container">
+                    <!-- Vaccines will be loaded dynamically from database -->
+                    <div class="text-center py-8">
+                        <div class="animate-pulse">
+                            <div class="h-40 bg-gray-300 rounded-md mb-4"></div>
+                            <div class="h-6 bg-gray-300 rounded w-3/4 mx-auto mb-2"></div>
+                            <div class="h-4 bg-gray-300 rounded w-full mb-2"></div>
+                            <div class="h-4 bg-gray-300 rounded w-2/3 mx-auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-16 bg-white">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <h2 class="text-4xl font-bold text-center text-blue-600 mb-4" data-translate="contact_title">Contact Us
+                </h2>
+                <p class="text-center text-gray-600 mb-12" data-translate="contact_subtitle">Have questions? We're here
+                    to help.</p>
+                <div class="bg-gray-100 rounded-lg shadow-lg p-8 md:p-12">
+                    <form id="contact-form" class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-gray-700 font-semibold mb-2"
+                                data-translate="name_label">Name</label>
+                            <input type="text" id="name"
+                                class="input-field w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none transition-all duration-200">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-gray-700 font-semibold mb-2"
+                                data-translate="email_label">Email</label>
+                            <input type="email" id="email"
+                                class="input-field w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none transition-all duration-200">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-gray-700 font-semibold mb-2"
+                                data-translate="message_label">Message</label>
+                            <textarea id="message" rows="5"
+                                class="input-field w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none transition-all duration-200"></textarea>
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-blue-600 text-white py-3 rounded-full font-semibold hover:bg-blue-700 transition-transform duration-300 btn-primary shadow-lg"
+                            data-translate="send_message">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-16 bg-white">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <h2 class="text-4xl font-bold text-center text-blue-600 mb-4" data-translate="faq_title">Frequently
+                    Asked Questions</h2>
+                <p class="text-center text-gray-600 mb-12" data-translate="faq_subtitle">Answers to your most common
+                    questions.</p>
+                <div class="space-y-4">
+                    <!-- FAQ Item 1 -->
+                    <div class="bg-gray-100 rounded-lg p-6 shadow-sm cursor-pointer transition-all duration-300 card"
+                        onclick="toggleFAQ(this)">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-800" data-translate="faq1_q">How do I register my
+                                child?</h3>
+                            <span class="text-blue-600 font-bold text-2xl">+</span>
+                        </div>
+                        <div class="faq-content hidden mt-4 text-gray-700" data-translate="faq1_a">
+                            You can register your child by creating a parent account, logging in, and then adding your
+                            child's details to your profile. You will need their birth date and other relevant
+                            information.
+                        </div>
+                    </div>
+                    <!-- FAQ Item 2 -->
+                    <div class="bg-gray-100 rounded-lg p-6 shadow-sm cursor-pointer transition-all duration-300 card"
+                        onclick="toggleFAQ(this)">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-800" data-translate="faq2_q">Is my data secure?
+                            </h3>
+                            <span class="text-blue-600 font-bold text-2xl">+</span>
+                        </div>
+                        <div class="faq-content hidden mt-4 text-gray-700" data-translate="faq2_a">
+                            Yes, we use industry-standard encryption and security protocols to ensure your data is safe
+                            and private. Only authorized users (you and your child's registered doctor) can access the
+                            information.
+                        </div>
+                    </div>
+                    <!-- FAQ Item 3 -->
+                    <div class="bg-gray-100 rounded-lg p-6 shadow-sm cursor-pointer transition-all duration-300 card"
+                        onclick="toggleFAQ(this)">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-800" data-translate="faq3_q">Can I view my
+                                child's vaccination history?</h3>
+                            <span class="text-blue-600 font-bold text-2xl">+</span>
+                        </div>
+                        <div class="faq-content hidden mt-4 text-gray-700" data-translate="faq3_a">
+                            Absolutely. Once a doctor updates a vaccination record, it will be immediately visible in
+                            your child's profile under your account. You can also download a copy for your records.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p data-translate="footer_text">&copy; 2024 Child Vaccination System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+
+    <!-- Login Modal -->
+    <div id="login-modal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden items-center justify-center fade-in z-[100]">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full relative">
+            <button onclick="hideModal('login-modal')"
+                class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-all duration-200">&times;</button>
+            <h3 class="text-2xl font-bold text-center text-gray-800 mb-6" data-translate="modal_login_title">Login</h3>
+            <p class="text-center text-gray-600 mb-4" data-translate="modal_login_subtitle">Are you a Parent or a
+                Doctor?</p>
+            <div class="flex justify-center space-x-4">
+                <a href="{{ url_for('parent_login') }}"
+                    class="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 btn-primary shadow-lg"
+                    data-translate="patient_login">Parent Login</a>
+                <a href="{{ url_for('doctor_login') }}"
+                    class="bg-green-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition-all duration-200 btn-primary shadow-lg"
+                    data-translate="doctor_login">Doctor Login</a>
+            </div>
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <a href="{{ url_for('admin_login') }}"
+                    class="block w-full bg-gray-700 text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition-all duration-200 btn-primary shadow-lg text-center">
+                    <i class="fas fa-user-shield mr-2"></i>Admin Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signup-modal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden items-center justify-center fade-in z-[100]">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full relative">
+            <button onclick="hideModal('signup-modal')"
+                class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-all duration-200">&times;</button>
+            <h3 class="text-2xl font-bold text-center text-gray-800 mb-6" data-translate="modal_signup_title">Sign Up
+            </h3>
+            <p class="text-center text-gray-600 mb-4" data-translate="modal_signup_subtitle">Are you a Parent or a
+                Doctor?</p>
+            <div class="flex justify-center space-x-4">
+                <a href="{{ url_for('parent_signup') }}"
+                    class="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 btn-primary shadow-lg"
+                    data-translate="patient_signup">Parent Sign Up</a>
+                <a href="{{ url_for('doctor_signup') }}"
+                    class="bg-green-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition-all duration-200 btn-primary shadow-lg"
+                    data-translate="doctor_signup">Doctor Sign Up</a>
+            </div>
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <a href="{{ url_for('admin_login') }}"
+                    class="block w-full bg-gray-700 text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition-all duration-200 btn-primary shadow-lg text-center">
+                    <i class="fas fa-user-shield mr-2"></i>Admin Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Button -->
+    <a href="{{ url_for('chatbot') }}" target="_blank" rel="noopener noreferrer"
+        class="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 z-50"
+        title="Chat with our Assistant">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+    </a>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top"
+        class="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 z-50 hidden"
+        title="Go to top">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
+
+    <script src="{{ url_for('static', filename='JS/script.js') }}"></script>
+    <script>
+        // Load vaccines when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            loadVaccines();
+
+            // Back to Top button logic
+            const backToTopButton = document.getElementById('back-to-top');
+
+            window.onscroll = function () {
+                if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                    backToTopButton.classList.remove('hidden');
+                } else {
+                    backToTopButton.classList.add('hidden');
+                }
+            };
+
+            backToTopButton.addEventListener('click', function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        async function loadVaccines() {
+            try {
+                const response = await fetch('/api/vaccines');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch vaccines');
+                }
+
+                const vaccines = await response.json();
+                displayVaccines(vaccines);
+            } catch (error) {
+                console.error('Error loading vaccines:', error);
+                document.getElementById('vaccines-container').innerHTML = `
+                    <div class="col-span-3 text-center py-8">
+                        <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+                        <p class="text-gray-500">Failed to load vaccines. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayVaccines(vaccines) {
+            const container = document.getElementById('vaccines-container');
+
+            if (!vaccines || vaccines.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-3 text-center py-8">
+                        <i class="fas fa-syringe text-4xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500">No vaccines available at the moment.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Generate colors for vaccine cards
+            const colors = [
+                { from: 'from-purple-500', to: 'to-indigo-600', text: 'text-indigo-600' },
+                { from: 'from-blue-500', to: 'to-cyan-600', text: 'text-cyan-600' },
+                { from: 'from-green-500', to: 'to-teal-600', text: 'text-teal-600' },
+                { from: 'from-yellow-500', to: 'to-orange-600', text: 'text-orange-600' },
+                { from: 'from-red-500', to: 'to-pink-600', text: 'text-pink-600' }
+            ];
+
+            container.innerHTML = vaccines.map((vaccine, index) => {
+                const color = colors[index % colors.length];
+                const recommendedAge = vaccine.recommended_age_days ?
+                    `Recommended at ${Math.floor(vaccine.recommended_age_days / 30)} months` :
+                    'Age recommendation available';
+
+                return `
+                    <div class="bg-white rounded-xl shadow-md transition-all duration-300 card hover:shadow-lg hover:-translate-y-1 flex flex-col overflow-hidden">
+                        <div class="w-full h-32 bg-gradient-to-br ${color.from} ${color.to} rounded-t-xl flex items-center justify-center text-white">
+                            <i class="fas fa-syringe text-5xl opacity-80"></i>
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">${vaccine.name}</h3>
+                            <p class="text-gray-700 text-sm mb-4 flex-grow h-24">${vaccine.description || 'No description available.'}</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-3 mt-auto">
+                                <span class="font-medium"><i class="fas fa-baby mr-1"></i> ${recommendedAge}</span>
+                                ${vaccine.dosage ? `<span class="font-semibold ${color.text}"><i class="fas fa-prescription-bottle-alt mr-1"></i> ${vaccine.dosage}</span>` : ''}
+                                ${vaccine.price ? `
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">₹${parseFloat(vaccine.price).toFixed(2)}</span>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+
+</html>

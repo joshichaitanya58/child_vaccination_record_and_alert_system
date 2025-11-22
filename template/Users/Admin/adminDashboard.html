@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Vaccine Track</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/Users/Admin/adminDashboard.css') }}">
+
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-800" data-admin-name="{{ admin_name }}">
+    <div class="flex h-screen bg-gray-100">
+        <!-- Enhanced Sidebar -->
+        <aside class="w-64 sidebar-gradient text-white flex-shrink-0 hidden md:flex md:flex-col shadow-2xl">
+            <div class="p-6 border-b border-gray-700">
+                <a href="{{ url_for('admin_dashboard') }}"
+                    class="text-2xl font-bold text-white flex items-center transition-all hover:opacity-80">
+                    <div
+                        class="bg-gradient-to-r from-blue-500 to-purple-600 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg mr-3">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                    <span class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Admin
+                        Panel</span>
+                </a>
+            </div>
+            <nav id="sidebar-nav" class="mt-6 px-4 space-y-2 flex-1">
+                <a href="#dashboard" data-section="dashboard"
+                    class="nav-link flex items-center space-x-3 p-4 rounded-xl active-link">
+                    <i class="fas fa-tachometer-alt w-6 text-blue-400"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                <a href="#doctors" data-section="doctors"
+                    class="nav-link flex items-center space-x-3 p-4 rounded-xl hover:bg-blue-700/20 transition-all duration-300 border border-transparent hover:border-blue-600/30">
+                    <i class="fas fa-user-md w-6 text-green-400"></i>
+                    <span>Manage Doctors</span>
+                </a>
+                <a href="#parents" data-section="parents"
+                    class="nav-link flex items-center space-x-3 p-4 rounded-xl hover:bg-blue-700/20 transition-all duration-300 border border-transparent hover:border-blue-600/30">
+                    <i class="fas fa-users w-6 text-purple-400"></i>
+                    <span>Manage Parents</span>
+                </a>
+                <a href="#messages" data-section="messages"
+                    class="nav-link flex items-center space-x-3 p-4 rounded-xl hover:bg-blue-700/20 transition-all duration-300 border border-transparent hover:border-blue-600/30">
+                    <i class="fas fa-envelope w-5 text-yellow-400"></i>
+                    <span class="flex-1">Contact Messages</span>
+                    <span id="unread-messages-badge"
+                        class="hidden w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center notification-badge border-2 border-gray-800"></span>
+                </a>
+                <a href="#activity" data-section="activity"
+                    class="nav-link flex items-center space-x-3 p-4 rounded-xl hover:bg-blue-700/20 transition-all duration-300 border border-transparent hover:border-blue-600/30">
+                    <i class="fas fa-history w-6 text-orange-400"></i>
+                    <span>Activity Log</span>
+                </a>
+                <a href="#vaccines" data-section="vaccines"
+                    class="nav-link flex items-center space-x-3 p-4 rounded-xl hover:bg-blue-700/20 transition-all duration-300 border border-transparent hover:border-blue-600/30">
+                    <i class="fas fa-syringe w-5 text-red-400"></i>
+                    <span>Manage Vaccines</span>
+                </a>
+                <a href="#system-health" data-section="system-health"
+                    class="nav-link flex items-center space-x-3 p-4 rounded-xl hover:bg-blue-700/20 transition-all duration-300 border border-transparent hover:border-blue-600/30">
+                    <i class="fas fa-heartbeat w-6 text-pink-400"></i>
+                    <span>System Health</span>
+                </a>
+            </nav>            
+            <!-- External Links Section -->
+            <a href="{{ url_for('admin_product_orders') }}" class="nav-link items-center space-x-3 p-4 rounded-xl hover:bg-blue-700/20 transition-all duration-300 border border-transparent hover:border-blue-600/30">
+                <i class="fas fa-receipt w-6 text-blue-400"></i>
+                <span>Product Orders</span>
+            </a>
+
+            <div class="p-4 border-t border-gray-700">
+                <div class="flex items-center space-x-3 p-3 bg-gray-800/50 rounded-xl">
+                    <div
+                        class="bg-gradient-to-r from-blue-500 to-purple-600 w-10 h-10 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-user-shield text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-sm">{{ admin_name }}</p>
+                        <a href="{{ url_for('logout') }}"
+                            class="text-xs text-red-400 hover:text-red-300 transition-colors">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Enhanced Header -->
+            <header class="bg-white shadow-lg border-b border-gray-200">
+                <div class="flex justify-between items-center p-4">
+                    <button id="mobile-menu-button"
+                        class="md:hidden text-gray-600 hover:text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-colors">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-xl font-semibold text-gray-700 flex items-center">
+                        <i class="fas fa-shield-alt text-blue-600 mr-3"></i>
+                        Admin Dashboard
+                    </h1>
+                    <div class="flex items-center space-x-4">
+                        <button id="change-password-btn"
+                            class="text-gray-600 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                            title="Change Password">
+                            <i class="fas fa-cog text-xl"></i>
+                        </button>
+                        <span class="font-medium text-gray-700">Welcome, {{ admin_name }}</span>
+                        <a href="{{ url_for('logout') }}"
+                            class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                            title="Logout">
+                            <i class="fas fa-sign-out-alt text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Enhanced Main content area -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-6" id="main-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="dashboard-section">
+                    <!-- Welcome Section -->
+                    <div class="mb-8">
+                        <div class="gradient-bg rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
+                            <div class="relative z-10">
+                                <h1 class="text-4xl font-bold mb-3" id="welcome-message">Welcome back, {{ admin_name }}!
+                                    👋</h1>
+                                <p class="text-blue-100 text-lg">Here's an overview of your system's activity and
+                                    performance metrics</p>
+                            </div>
+                            <div
+                                class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32">
+                            </div>
+                            <div
+                                class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Stats Cards -->
+                    <div id="stats-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="stat-card-skeleton"></div>
+                        <div class="stat-card-skeleton"></div>
+                        <div class="stat-card-skeleton"></div>
+                        <div class="stat-card-skeleton"></div>
+                    </div>
+
+                    <!-- Enhanced Charts Section -->
+                    <div id="charts-section" class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-8">
+                        <div class="lg:col-span-3 bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-6 flex items-center">
+                                <i class="fas fa-chart-line text-blue-600 mr-3"></i>
+                                User Registrations Over Time
+                            </h3>
+                            <canvas id="registration-chart"></canvas>
+                        </div>
+                        <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-chart-pie text-purple-600 mr-3"></i>
+                                User Role Distribution
+                            </h3>
+                            <canvas id="user-distribution-chart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Other sections will be dynamically loaded here -->
+                <section id="doctors-section" class="dashboard-section hidden"></section>
+                <section id="parents-section" class="dashboard-section hidden"></section>
+                <section id="messages-section" class="dashboard-section hidden"></section>
+                <section id="activity-section" class="dashboard-section hidden"></section>
+                <section id="vaccines-section" class="dashboard-section hidden"></section>
+                <section id="system-health-section" class="dashboard-section hidden"></section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Enhanced Modals -->
+    <!-- User Details Modal -->
+    <div id="user-details-modal"
+        class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[102] hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl border border-gray-200">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center" id="user-modal-title">
+                    <i class="fas fa-user-circle text-blue-600 mr-3"></i>
+                    User Details
+                </h3>
+                <button onclick="hideModal('user-details-modal')"
+                    class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="user-modal-content" class="space-y-4">
+                <!-- Details will be populated here -->
+            </div>
+            <div class="flex justify-end mt-6 pt-4 border-t border-gray-100">
+                <button type="button" onclick="hideModal('user-details-modal')"
+                    class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                    <i class="fas fa-check mr-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Details Modal -->
+    <div id="health-details-modal"
+        class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[103] hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl border border-gray-200">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center" id="health-details-title">
+                    <i class="fas fa-heartbeat text-red-600 mr-3"></i>
+                    Service Details
+                </h3>
+                <button onclick="hideModal('health-details-modal')"
+                    class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="health-details-content" class="space-y-2 text-sm bg-gray-50 p-4 rounded-xl overflow-x-auto">
+                <!-- Details will be populated here -->
+            </div>
+            <div class="flex justify-end mt-6 pt-4 border-t border-gray-100">
+                <button type="button" onclick="hideModal('health-details-modal')"
+                    class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                    <i class="fas fa-check mr-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="add-user-modal"
+        class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[102] hidden backdrop-blur-sm">
+        <div
+            class="bg-white rounded-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center" id="add-user-modal-title">
+                    <i class="fas fa-user-plus text-green-600 mr-3"></i>
+                    Add New User
+                </h3>
+                <button onclick="hideModal('add-user-modal')"
+                    class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="add-user-form" class="space-y-4">
+                <input type="hidden" name="user_type" id="add-user-type">
+                <div>
+                    <label for="add-user-name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input type="text" id="add-user-name" name="name" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+                <div>
+                    <label for="add-user-email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="add-user-email" name="email" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+                <div>
+                    <label for="add-user-password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="add-user-password" name="password" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+                <div>
+                    <label for="add-user-phone" class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                    <input type="tel" id="add-user-phone" name="phone" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+                <div id="add-user-specific-fields">
+                    <!-- Parent/Doctor specific fields will be loaded here -->
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="hideModal('add-user-modal')"
+                        class="px-6 py-3 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all font-medium">Cancel</button>
+                    <button type="submit"
+                        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                        <i class="fas fa-user-plus mr-2"></i>Add User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View User Details Modal -->
+    <div id="view-user-modal"
+        class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[102] hidden backdrop-blur-sm">
+        <div
+            class="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center" id="view-user-modal-title">
+                    <i class="fas fa-user-circle text-blue-600 mr-3"></i>
+                    User Details
+                </h3>
+                <button onclick="hideModal('view-user-modal')"
+                    class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="view-user-modal-content" class="space-y-4">
+                <!-- Details will be populated here -->
+            </div>
+            <div class="flex justify-end mt-6 pt-4 border-t border-gray-100">
+                <button type="button" onclick="hideModal('view-user-modal')"
+                    class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                    <i class="fas fa-check mr-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal"
+        class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[102] hidden backdrop-blur-sm">
+        <div
+            class="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center" id="edit-user-modal-title">
+                    <i class="fas fa-user-edit text-green-600 mr-3"></i>
+                    Edit User Profile
+                </h3>
+                <button onclick="hideModal('edit-user-modal')"
+                    class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="edit-user-form" class="space-y-4">
+                <input type="hidden" name="user_id" id="edit-user-id">
+                <div id="edit-user-specific-fields">
+                    <!-- Parent/Doctor specific fields will be loaded here -->
+                </div>
+                <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="hideModal('edit-user-modal')"
+                        class="px-6 py-3 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all font-medium">Cancel</button>
+                    <button type="submit"
+                        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                        <i class="fas fa-save mr-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-confirm-modal"
+        class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[102] hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl border border-gray-200 text-center">
+            <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-6"></i>
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Are you sure?</h3>
+            <p class="text-gray-600 mb-6" id="delete-confirm-message">Do you really want to delete this user? This
+                process cannot be undone.</p>
+            <div class="flex justify-center space-x-4">
+                <button id="cancel-delete-btn"
+                    class="px-8 py-3 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all font-semibold">Cancel</button>
+                <button id="confirm-delete-btn"
+                    class="px-8 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all font-semibold">
+                    <i class="fas fa-trash mr-2"></i>Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="change-password-modal"
+        class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[102] hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl border border-gray-200">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-key text-blue-600 mr-3"></i>
+                    Change Admin Password
+                </h3>
+                <button onclick="hideModal('change-password-modal')"
+                    class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="change-password-form" class="space-y-4">
+                <div>
+                    <label for="current-password" class="block text-sm font-medium text-gray-700 mb-2">Current
+                        Password</label>
+                    <input type="password" id="current-password" name="current_password" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+                <div>
+                    <label for="new-password" class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                    <input type="password" id="new-password" name="new_password" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+                <div>
+                    <label for="confirm-new-password" class="block text-sm font-medium text-gray-700 mb-2">Confirm New
+                        Password</label>
+                    <input type="password" id="confirm-new-password" name="confirm_new_password" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="hideModal('change-password-modal')"
+                        class="px-6 py-3 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all font-medium">Cancel</button>
+                    <button type="submit"
+                        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                        <i class="fas fa-save mr-2"></i>Update Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Inactivity Timeout Modal -->
+    <div id="inactivity-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[105] hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-md mx-4 text-center shadow-2xl border border-gray-200">
+            <i class="fas fa-hourglass-half text-6xl text-yellow-500 mb-6 animate-spin-slow"></i>
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Are you still there?</h3>
+            <p class="text-gray-600 mb-6">
+                You will be logged out due to inactivity in <strong id="inactivity-countdown"
+                    class="text-xl text-red-600">2:00</strong>.
+            </p>
+            <div class="flex justify-center space-x-4">
+                <a href="{{ url_for('logout') }}" id="inactivity-logout-btn"
+                    class="px-8 py-3 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-100 transition-all font-semibold">Logout</a>
+                <button id="inactivity-stay-btn"
+                    class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                    <i class="fas fa-play mr-2"></i>Stay Logged In
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reply Message Modal -->
+    <div id="reply-message-modal"
+        class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[102] hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-2xl mx-4 shadow-2xl border border-gray-200">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-reply text-blue-600 mr-3"></i>
+                    Reply to Message
+                </h3>
+                <button onclick="hideModal('reply-message-modal')"
+                    class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="reply-message-form" class="space-y-4">
+                <input type="hidden" id="reply-message-id" name="message_id">
+                <div>
+                    <label for="reply-to-email" class="block text-sm font-medium text-gray-700 mb-2">To:</label>
+                    <input type="email" id="reply-to-email" name="email" readonly
+                        class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-xl cursor-not-allowed">
+                </div>
+                <div>
+                    <label for="reply-subject" class="block text-sm font-medium text-gray-700 mb-2">Subject:</label>
+                    <input type="text" id="reply-subject" name="subject" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+                <div>
+                    <label for="reply-body" class="block text-sm font-medium text-gray-700 mb-2">Message:</label>
+                    <textarea id="reply-body" name="body" rows="6" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="hideModal('reply-message-modal')"
+                        class="px-6 py-3 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all font-medium">Cancel</button>
+                    <button type="submit"
+                        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                        <i class="fas fa-paper-plane mr-2"></i>Send Reply
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enhanced Toast Notification -->
+    <div id="toast"
+        class="fixed top-24 right-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-xl shadow-2xl z-[105] transform translate-x-[120%] transition-transform duration-300 border-l-4 border-white/30">
+        <div class="flex items-center space-x-3">
+            <i id="toast-icon" class="fas fa-check-circle text-lg"></i>
+            <span id="toast-message" class="font-semibold">Success!</span>
+        </div>
+    </div>
+
+    <!-- Enhanced Loading Spinner -->
+    <div id="loading-spinner"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[110] hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <span class="text-gray-700 font-semibold">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Vaccine Add/Edit Modal -->
+    <div id="vaccine-modal"
+        class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+        <div
+            class="bg-white rounded-2xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                <h3 id="vaccine-modal-title" class="text-xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-syringe text-red-600 mr-3"></i>
+                    Manage Vaccine
+                </h3>
+                <button onclick="hideModal('vaccine-modal')"
+                    class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="vaccine-form" onsubmit="handleVaccineSubmit(event)">
+                <input type="hidden" id="vaccine-id">
+                <div class="space-y-4">
+                    <div>
+                        <label for="vaccine-name" class="block text-sm font-medium text-gray-700 mb-2">Vaccine
+                            Name</label>
+                        <input type="text" id="vaccine-name" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                    </div>
+                    <div>
+                        <label for="vaccine-description"
+                            class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea id="vaccine-description" rows="3"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"></textarea>
+                    </div>
+                    <div>
+                        <label for="vaccine-price" class="block text-sm font-medium text-gray-700 mb-2">Price
+                            (₹)</label>
+                        <input type="number" id="vaccine-price" step="0.01"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            placeholder="e.g., 49.99">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="vaccine-age" class="block text-sm font-medium text-gray-700 mb-2">Recommended
+                                Age (in days)</label>
+                            <input type="number" id="vaccine-age"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label for="vaccine-dosage" class="block text-sm font-medium text-gray-700 mb-2">Dosage
+                                (e.g., 0.5 ml)</label>
+                            <input type="text" id="vaccine-dosage"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="vaccine-series-name" class="block text-sm font-medium text-gray-700 mb-2">Series
+                                Name (e.g., DPT Booster)</label>
+                            <input type="text" id="vaccine-series-name"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label for="vaccine-series-number"
+                                class="block text-sm font-medium text-gray-700 mb-2">Series Number (e.g., 1)</label>
+                            <input type="number" id="vaccine-series-number"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="hideModal('vaccine-modal')"
+                        class="px-6 py-3 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all font-medium">Cancel</button>
+                    <button type="submit"
+                        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                        <i class="fas fa-save mr-2"></i>Save Vaccine
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enhanced Back to Top Button -->
+    <button id="back-to-top"
+        class="fixed bottom-8 right-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 z-50 hidden transform hover:scale-110"
+        title="Go to top">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
+
+    <script src="{{ url_for('static', filename='JS/Users/Admin/adminDashboard.js') }}"></script>
+</body>
+
+</html>

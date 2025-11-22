@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Sign Up - Child Vaccination System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/Users/Parent/parentSignup.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+</head>
+
+<body class="text-gray-800 bg-gray-50">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="{{ url_for('home') }}" class="text-2xl font-bold text-blue-600">
+                <img src="https://placehold.co/40x40/4a90e2/ffffff?text=VT" alt="Logo"
+                    class="inline-block mr-2 rounded-full">
+                <span>VACCINE TRACK</span>
+            </a>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="mt-20 min-h-screen flex items-center justify-center py-12 px-4">
+        <div class="max-w-md w-full space-y-8 fade-in">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Create Your Parent Account
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Or <a href="{{ url_for('parent_login') }}"
+                        class="font-medium text-blue-600 hover:text-blue-500">sign
+                        in to your existing account</a>
+                </p>
+            </div>
+            <form class="mt-8 space-y-6" action="{{ url_for('parent_signup') }}" method="POST" id="parent-signup-form">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div class="mb-4">
+                        <label for="full-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input id="full-name" name="full-name" type="text" required
+                            class="input-field relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                    </div>
+                    <div class="mb-4">
+                        <label for="email-address" class="block text-sm font-medium text-gray-700 mb-1">Email
+                            Address</label>
+                        <input id="email-address" name="email" type="email" autocomplete="email" required
+                            class="input-field relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                    </div>
+                    <div class="mb-4">
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input id="phone" name="phone" type="tel" required
+                            class="input-field relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                    </div>
+                    <div class="mb-4">
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <textarea id="address" name="address" rows="2" required
+                            class="input-field relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10"></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 relative">
+                        <div class="relative">
+                            <label for="state" class="block text-sm font-medium text-gray-700 mb-1">State</label>
+                            <select id="state" name="state" required
+                                class="input-field appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                                <option value="">Select State</option>
+                            </select>
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 top-6 flex items-center px-2 text-gray-700">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20">
+                                    <path
+                                        d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                            <select id="city" name="city" required disabled
+                                class="input-field appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 bg-gray-100 cursor-not-allowed">
+                                <option value="">Select State First</option>
+                            </select>
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 top-6 flex items-center px-2 text-gray-700">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20">
+                                    <path
+                                        d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="country" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <input id="country" name="country" type="text" value="India" required
+                            class="input-field relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input id="password" name="password" type="password" autocomplete="new-password" required
+                            class="input-field relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                        <!-- Password Strength Indicator -->
+                        <div id="password-strength-container" class="mt-2 hidden">
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="password-strength-bar" class="h-2 rounded-full transition-all duration-300"
+                                    style="width: 0%;"></div>
+                            </div>
+                            <p id="password-strength-text" class="text-xs mt-1 text-gray-500"></p>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirm
+                            Password</label>
+                        <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password"
+                            required
+                            class="input-field relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10">
+                    </div>
+                </div>
+
+                <!-- Child Information Section -->
+                <div class="space-y-4 pt-4">
+                    <h3 class="text-lg font-semibold text-gray-800 pt-4 border-t">Child Details (Optional)</h3>
+                    <div id="children-container" class="space-y-4">
+                        <!-- Child forms will be dynamically added here by JS -->
+                    </div>
+                    <button type="button" id="add-child-btn"
+                        class="w-full text-sm font-medium text-blue-600 hover:text-blue-500 focus:outline-none py-2 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        + Add Child
+                    </button>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="agree-terms" name="agree-terms" type="checkbox" required
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="agree-terms" class="ml-2 block text-sm text-gray-900">
+                        I agree to the <a href="#" class="text-blue-600 hover:text-blue-500">Terms and Conditions</a>
+                    </label>
+                </div>
+
+                <div>
+                    <button type="submit"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300">
+                        Create Account
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-2">&copy; 2024 Child Vaccination System. All rights reserved.</p>
+            
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='JS/Users/Parent/parentSignup.js') }}"></script>
+</body>
+
+</html>

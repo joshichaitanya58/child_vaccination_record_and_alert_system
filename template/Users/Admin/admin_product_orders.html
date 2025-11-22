@@ -1,0 +1,411 @@
+{% extends "Users/Admin/admin_layout.html" %}
+
+{% block title %}Manage Product Orders{% endblock %}
+
+{% block page_title %}Product Orders{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+<style>
+    .status-select {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.9rem;
+        border-radius: 0.375rem;
+        border: 1px solid #ced4da;
+        transition: all 0.2s ease-in-out;
+    }
+    .status-select:disabled {
+        background-color: #e9ecef;
+        cursor: not-allowed;
+    }
+    .modal {
+        transition: opacity 0.3s ease;
+    }
+    .modal-content {
+        transition: transform 0.3s ease;
+    }
+    .hidden {
+        display: none !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-lg p-8">
+    <div class="flex items-center justify-between mb-8 pb-4 border-b">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <i class="fas fa-receipt text-blue-500 mr-3"></i>
+            All Orders
+        </h1>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Parent Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Amount</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment Method</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="orders-table-body" class="bg-white divide-y divide-gray-200">
+                <!-- Orders will be loaded here by JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+<div id="order-details-modal"
+    class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50 modal">
+    <div
+        class="bg-white rounded-lg shadow-xl p-8 max-w-3xl w-full relative transform transition-all scale-95 opacity-0 modal-content max-h-[90vh] flex flex-col">
+        <button type="button" onclick="closeModal()"
+            class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+        <h3 class="text-2xl font-bold text-gray-800 mb-6" id="modal-title">Order Details</h3>
+
+        <div id="modal-body" class="space-y-6 overflow-y-auto flex-grow">
+            <!-- Loading spinner -->
+            <div id="modal-loader" class="text-center py-8">
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+                <p class="mt-2 text-gray-600">Loading details...</p>
+            </div>
+
+            <!-- Order content will be injected here -->
+            <div id="modal-order-content" style="display: none;">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Shipping Address</h4>
+                        <div id="modal-shipping-address" class="text-sm text-gray-600 bg-gray-50 p-4 rounded-lg"></div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Order Summary</h4>
+                        <div id="modal-order-summary" class="text-sm text-gray-600 bg-gray-50 p-4 rounded-lg space-y-1"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-gray-700 mt-6 mb-2">Items Ordered</h4>
+                    <div class="border rounded-lg overflow-hidden">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                                    <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Qty</th>
+                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
+                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modal-items-table" class="divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Order Tracking History -->
+                <div id="modal-tracking-container" class="mt-6">
+                    <h4 class="font-semibold text-gray-700 mb-4">Order Tracking</h4>
+                    <div class="border-l-2 border-blue-200 ml-3">
+                        <ol id="modal-tracking-history" class="relative"></ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-right border-t pt-4">
+            <button type="button" onclick="closeModal()"
+                class="bg-gray-200 text-gray-800 font-semibold px-6 py-2 rounded-lg hover:bg-gray-300 transition">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Configure toastr
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+        };
+
+        // Load orders on page load
+        loadOrders();
+
+        // Function to load orders from API
+        async function loadOrders() {
+            try {
+                const response = await fetch('/api/admin/orders');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const tbody = document.getElementById('orders-table-body');
+                tbody.innerHTML = '';
+
+                if (data.success && data.orders && data.orders.length > 0) {
+                    data.orders.forEach(order => {
+                        const orderDate = new Date(order.order_date).toLocaleString('en-IN', {
+                            dateStyle: 'medium',
+                            timeStyle: 'short'
+                        });
+
+                        const row = `
+                        <tr id="order-row-${order.id}">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#${order.id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${order.parent_name || 'N/A'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${orderDate}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">₹${parseFloat(order.total_amount || 0).toFixed(2)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${order.payment_method || 'N/A'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <select class="status-select rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" data-order-id="${order.id}" onchange="updateOrderStatus(this)">
+                                    <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                                    <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button type="button" onclick="viewOrderDetails('${order.id}')"
+                                    class="text-blue-600 hover:text-blue-900 font-semibold">
+                                    View Details
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                        tbody.innerHTML += row;
+                    });
+
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-500">No orders found.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                toastr.error('Failed to load orders. Please try again.');
+                document.getElementById('orders-table-body').innerHTML =
+                    '<tr><td colspan="7" class="text-center py-8 text-red-500">Error loading orders. Please refresh the page.</td></tr>';
+            }
+        }
+
+        // Function to update order status
+        window.updateOrderStatus = async function(selectElement) {
+            const orderId = selectElement.dataset.orderId;
+            const newStatus = selectElement.value;
+
+            // Disable button and show loading state
+            selectElement.disabled = true;
+
+            try {
+                const response = await fetch('/api/admin/order/update_status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken() // Add CSRF token if needed
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        status: newStatus
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    toastr.success(result.message);
+                } else {
+                    toastr.error(result.error || 'Failed to update order status');
+                }
+            } catch (error) {
+                console.error('Error updating order status:', error);
+                toastr.error('An error occurred. Please try again.');
+            } finally {
+                // Re-enable button and restore original text
+                selectElement.disabled = false;
+            }
+        }
+
+        // Function to get CSRF token (if needed for your backend)
+        function getCSRFToken() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            return csrfToken ? csrfToken.getAttribute('content') : '';
+        }
+
+        // --- Modal Functionality ---
+        const modal = document.getElementById('order-details-modal');
+        const modalContent = modal.querySelector('.modal-content');
+        const loader = document.getElementById('modal-loader');
+        const orderContent = document.getElementById('modal-order-content');
+
+        window.openModal = function() {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        window.closeModal = function() {
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                resetModal();
+            }, 300);
+        }
+
+        function resetModal() {
+            loader.style.display = 'block';
+            orderContent.style.display = 'none';
+            document.getElementById('modal-title').textContent = 'Order Details';
+            loader.innerHTML = `<i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i><p class="mt-2 text-gray-600">Loading details...</p>`;
+        }
+
+        window.viewOrderDetails = async function(orderId) {
+            openModal();
+
+            try {
+                const response = await fetch(`/api/admin/order_details/${orderId}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Failed to fetch order details.');
+
+                populateModal(data.order);
+
+            } catch (error) {
+                console.error('Error fetching order details:', error);
+                loader.innerHTML = `
+                    <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-2"></i>
+                    <p class="text-red-500 font-semibold">Error loading order details</p>
+                    <p class="text-gray-600 text-sm mt-1">${error.message}</p>
+                `;
+            }
+        }
+
+        function populateModal(order) {
+            if (!order) return;
+
+            document.getElementById('modal-title').textContent = `Order Details #${order.id}`;
+
+            // Shipping Address
+            document.getElementById('modal-shipping-address').innerHTML = `
+                <strong>${order.shipping_name || 'N/A'}</strong><br>
+                ${order.shipping_address || 'N/A'}<br>
+                ${order.shipping_city || ''}, ${order.shipping_state || ''} - ${order.shipping_pincode || ''}<br>
+                Phone: ${order.shipping_phone || 'N/A'}
+            `;
+
+            // Order Summary
+            const orderDate = new Date(order.order_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            document.getElementById('modal-order-summary').innerHTML = `
+                <p><strong>Date:</strong> ${orderDate}</p>
+                <p><strong>Status:</strong> <span class="font-semibold">${order.status || 'N/A'}</span></p>
+                <p><strong>Payment:</strong> ${order.payment_method || 'N/A'}</p>
+                <p class="font-bold text-lg mt-2"><strong>Total:</strong> ₹${parseFloat(order.total_amount || 0).toFixed(2)}</p>
+            `;
+
+            // Items Table
+            const itemsTable = document.getElementById('modal-items-table');
+            itemsTable.innerHTML = '';
+            if (order.items && Array.isArray(order.items)) {
+                order.items.forEach(item => {
+                    const subtotal = (item.quantity || 0) * parseFloat(item.price || 0);
+                    itemsTable.innerHTML += `
+                        <tr class="text-sm">
+                            <td class="px-4 py-3 text-gray-800">${item.product_name || 'Unknown'}</td>
+                            <td class="px-4 py-3 text-center text-gray-600">${item.quantity || 0}</td>
+                            <td class="px-4 py-3 text-right text-gray-600">₹${parseFloat(item.price || 0).toFixed(2)}</td>
+                            <td class="px-4 py-3 text-right font-semibold text-gray-800">₹${subtotal.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Tracking History
+            const trackingHistoryContainer = document.getElementById('modal-tracking-history');
+            trackingHistoryContainer.innerHTML = '';
+            if (order.tracking_history && Array.isArray(order.tracking_history) && order.tracking_history.length > 0) {
+                const sortedHistory = order.tracking_history.sort((a, b) => new Date(b.date) - new Date(a.date));
+                sortedHistory.forEach((step, index) => {
+                    const stepDate = new Date(step.date).toLocaleString('en-IN', {
+                        day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true
+                    });
+                    
+                    let iconClass = 'fa-box';
+                    let iconColor = 'text-gray-500';
+                    const statusLower = step.status.toLowerCase();
+
+                    if (statusLower.includes('delivered')) {
+                        iconClass = 'fa-check-circle';
+                        iconColor = 'text-green-500';
+                    } else if (statusLower.includes('shipped') || statusLower.includes('delivery')) {
+                        iconClass = 'fa-truck';
+                        iconColor = 'text-blue-500';
+                    } else if (statusLower.includes('processing') || statusLower.includes('paid')) {
+                        iconClass = 'fa-cogs';
+                        iconColor = 'text-orange-500';
+                    } else if (statusLower.includes('cancelled')) {
+                        iconClass = 'fa-times-circle';
+                        iconColor = 'text-red-500';
+                    }
+
+                    const isFirst = index === 0;
+
+                    const historyItem = `
+                        <li class="mb-6 ml-6">
+                            <span class="absolute flex items-center justify-center w-6 h-6 ${isFirst ? 'bg-blue-100' : 'bg-gray-100'} rounded-full -left-3 ring-8 ring-white">
+                                ${step.tracking_url ? 
+                                    `<a href="${step.tracking_url}" target="_blank" title="Track Package"><i class="fas ${iconClass} ${iconColor} hover:scale-125 transition-transform"></i></a>` :
+                                    `<i class="fas ${iconClass} ${iconColor}"></i>`
+                                }
+                            </span>
+                            <div class="items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:flex">
+                                <time class="mb-1 text-xs font-normal text-gray-400 sm:order-last sm:mb-0">${stepDate}</time>
+                                <div class="text-sm font-normal text-gray-500">${step.description || step.status} <span class="font-semibold text-gray-900">${step.location || ''}</span></div>
+                            </div>
+                        </li>
+                    `;
+                    trackingHistoryContainer.innerHTML += historyItem;
+                });
+            } else {
+                trackingHistoryContainer.innerHTML = `<li class="ml-6 text-gray-500">No tracking history available.</li>`;
+            }
+
+            // Show content, hide loader
+            loader.style.display = 'none';
+            orderContent.style.display = 'block';
+        }
+
+        // Close modal on background click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+    });
+</script>
+{% endblock %}

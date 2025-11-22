@@ -1,0 +1,769 @@
+{
+  "Diapering": [
+    {
+      "id": 1,
+      "name": "Pampers Baby Diapers (Small, 50 pcs)",
+      "description": "Ultra-soft diapers with high absorption for newborn comfort.",
+      "price": 549,
+      "category": "Diapering",
+      "image": "https://example.com/pampers-small.jpg",
+      "stock": 120
+    },
+    {
+      "id": 2,
+      "name": "Huggies Wonder Pants (Medium, 76 pcs)",
+      "description": "Comfort-fit diaper pants for active babies.",
+      "price": 699,
+      "category": "Diapering",
+      "image": "https://example.com/huggies-medium.jpg",
+      "stock": 95
+    },
+    {
+      "id": 3,
+      "name": "Comfort Fit Diapers (Large, 40 pcs)",
+      "description": "Pack of 40 large size comfort fit diapers.",
+      "price": 450,
+      "category": "Diapering",
+      "image": "https://example.com/baby_diapers.jpg",
+      "stock": 110
+    },
+    {
+      "id": 4,
+      "name": "Premium Overnight Diapers (Large, 30 pcs)",
+      "description": "Extra absorption for up to 12 hours of overnight protection.",
+      "price": 599,
+      "category": "Diapering",
+      "image": "https://example.com/overnight-diapers.jpg",
+      "stock": 75
+    },
+    {
+      "id": 5,
+      "name": "Diaper Rash Cream",
+      "description": "Soothes and protects against diaper rash.",
+      "price": 150,
+      "category": "Diapering",
+      "image": "https://example.com/baby_cream.jpg",
+      "stock": 90
+    },
+    {
+      "id": 6,
+      "name": "Diaper Disposal Bags (200 count)",
+      "description": "Scented bags for hygienic diaper disposal on the go.",
+      "price": 199,
+      "category": "Diapering",
+      "image": "https://example.com/disposal-bags.jpg",
+      "stock": 200
+    },
+    {
+      "id": 7,
+      "name": "Cloth Diaper Set (Pack of 6)",
+      "description": "Reusable, eco-friendly cloth diapers with adjustable sizing.",
+      "price": 1299,
+      "category": "Diapering",
+      "image": "https://example.com/cloth-diapers.jpg",
+      "stock": 40
+    }
+  ],
+  "Feeding & Nutrition": [
+    {
+      "id": 8,
+      "name": "Bottle Sterilizer",
+      "description": "Electric sterilizer for baby feeding bottles.",
+      "price": 1599,
+      "category": "Feeding & Nutrition",
+      "image": "https://example.com/sterilizer.jpg",
+      "stock": 30
+    },
+    {
+      "id": 9,
+      "name": "Baby Feeding Bottle (250ml)",
+      "description": "BPA-free feeding bottle with anti-colic nipple.",
+      "price": 249,
+      "category": "Feeding & Nutrition",
+      "image": "https://example.com/feeding-bottle.jpg",
+      "stock": 200
+    },
+    {
+      "id": 10,
+      "name": "Cerelac Wheat Apple (300g)",
+      "description": "Nutritious baby food for infants above 6 months.",
+      "price": 275,
+      "category": "Feeding & Nutrition",
+      "image": "https://example.com/cerelac.jpg",
+      "stock": 150
+    },
+    {
+      "id": 11,
+      "name": "Sipper Cup (Blue, 300ml)",
+      "description": "Leak-proof sipper cup for toddlers.",
+      "price": 199,
+      "category": "Feeding & Nutrition",
+      "image": "https://example.com/sipper-blue.jpg",
+      "stock": 150
+    },
+    {
+      "id": 12,
+      "name": "Anti-Colic Nipple (Pack of 2)",
+      "description": "Compatible with most feeding bottles.",
+      "price": 120,
+      "category": "Feeding & Nutrition",
+      "image": "https://example.com/nipples.jpg",
+      "stock": 180
+    },
+    {
+      "id": 13,
+      "name": "Baby Food Bowl Set (3 pcs)",
+      "description": "Non-slip, colorful feeding bowls.",
+      "price": 299,
+      "category": "Feeding & Nutrition",
+      "image": "https://example.com/bowl-set.jpg",
+      "stock": 60
+    },
+    {
+      "id": 14,
+      "name": "Baby Cereal (Multi-grain)",
+      "description": "Nutritious multi-grain cereal for infants 6+ months.",
+      "price": 250,
+      "category": "Feeding & Nutrition",
+      "image": "https://example.com/baby_food.jpg",
+      "stock": 130
+    },
+    {
+      "id": 15,
+      "name": "Organic Fruit Puree (Pack of 4)",
+      "description": "A pack of 4 assorted organic fruit purees.",
+      "price": 320,
+      "category": "Feeding & Nutrition",
+      "image": "https://example.com/baby_puree.jpg",
+      "stock": 100
+    },
+    {
+      "id": 16,
+      "name": "Insulated Baby Food Jar",
+      "description": "Keeps baby food warm or cool for hours on the go.",
+      "price": 349,
+      "category": "Feeding & Nutrition",
+      "image": "https://example.com/food-jar.jpg",
+      "stock": 80
+    },
+    {
+      "id": 17,
+      "name": "Bottle Warmer",
+      "description": "Quickly and safely warms milk and baby food.",
+      "price": 899,
+      "category": "Feeding & Nutrition",
+      "image": "https://example.com/bottle-warmer.jpg",
+      "stock": 50
+    },
+    {
+      "id": 18,
+      "name": "Soft-Tip Weaning Spoon (Set of 2)",
+      "description": "Gentle on baby's gums during first feeding experiences.",
+      "price": 129,
+      "category": "Feeding & Nutrition",
+      "image": "https://example.com/weaning-spoon.jpg",
+      "stock": 170
+    }
+  ],
+  "Bath & Skincare": [
+    {
+      "id": 19,
+      "name": "Johnson’s Baby Lotion (500ml)",
+      "description": "Mild moisturizing lotion for daily baby skincare.",
+      "price": 325,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/johnsons-lotion.jpg",
+      "stock": 85
+    },
+    {
+      "id": 20,
+      "name": "Mamaearth Baby Soap (100g)",
+      "description": "Natural and toxin-free bathing bar for sensitive baby skin.",
+      "price": 149,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/mamaearth-soap.jpg",
+      "stock": 140
+    },
+    {
+      "id": 21,
+      "name": "Baby Body Wash (No Tears)",
+      "description": "Gentle and tear-free body wash for babies.",
+      "price": 189,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/body-wash.jpg",
+      "stock": 100
+    },
+    {
+      "id": 22,
+      "name": "Baby Shampoo (No Tears)",
+      "description": "Mild shampoo enriched with natural extracts.",
+      "price": 179,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/baby-shampoo.jpg",
+      "stock": 110
+    },
+    {
+      "id": 23,
+      "name": "Gentle Baby Soap",
+      "description": "Mild and tear-free soap for delicate baby skin.",
+      "price": 80,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/baby_soap.jpg",
+      "stock": 160
+    },
+    {
+      "id": 24,
+      "name": "Baby Shampoo (No-Tears Formula)",
+      "description": "No-tears formula for soft and shiny hair.",
+      "price": 180,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/baby_shampoo.jpg",
+      "stock": 105
+    },
+    {
+      "id": 25,
+      "name": "Soft Baby Wipes (80 pcs)",
+      "description": "Hypoallergenic and alcohol-free wipes.",
+      "price": 120,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/baby_wipes.jpg",
+      "stock": 220
+    },
+    {
+      "id": 26,
+      "name": "Baby Massage Oil",
+      "description": "Enriched with olive oil and winter cherry for growth.",
+      "price": 220,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/baby_oil.jpg",
+      "stock": 95
+    },
+    {
+      "id": 27,
+      "name": "Baby Powder",
+      "description": "Keeps baby's skin soft, smooth, and dry.",
+      "price": 95,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/baby_powder.jpg",
+      "stock": 125
+    },
+    {
+      "id": 28,
+      "name": "Hooded Baby Towel",
+      "description": "Super soft and absorbent towel with a cute hood.",
+      "price": 449,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/hooded-towel.jpg",
+      "stock": 70
+    },
+    {
+      "id": 29,
+      "name": "Baby Bath Tub",
+      "description": "Ergonomic bathtub with supportive sling for newborns.",
+      "price": 899,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/baby-bathtub.jpg",
+      "stock": 35
+    },
+    {
+      "id": 30,
+      "name": "Baby Hair Brush & Comb Set",
+      "description": "Soft bristle brush and gentle comb for delicate scalps.",
+      "price": 149,
+      "category": "Bath & Skincare",
+      "image": "https://example.com/brush-comb-set.jpg",
+      "stock": 110
+    }
+  ],
+  "Health & Wellness": [
+    {
+      "id": 31,
+      "name": "Digital Thermometer",
+      "description": "Fast and accurate temperature reading for babies.",
+      "price": 299,
+      "category": "Health & Wellness",
+      "image": "https://example.com/thermometer.jpg",
+      "stock": 60
+    },
+    {
+      "id": 32,
+      "name": "Infrared Forehead Thermometer",
+      "description": "No-contact thermometer with instant readings.",
+      "price": 999,
+      "category": "Health & Wellness",
+      "image": "https://example.com/infrared-thermo.jpg",
+      "stock": 40
+    },
+    {
+      "id": 33,
+      "name": "Vitamin D Drops (30ml)",
+      "description": "Supports bone development and immunity.",
+      "price": 175,
+      "category": "Health & Wellness",
+      "image": "https://example.com/vitamin-d.jpg",
+      "stock": 120
+    },
+    {
+      "id": 34,
+      "name": "Iron Supplement Syrup (100ml)",
+      "description": "Doctor-recommended iron supplement for infants.",
+      "price": 199,
+      "category": "Health & Wellness",
+      "image": "https://example.com/iron-syrup.jpg",
+      "stock": 80
+    },
+    {
+      "id": 35,
+      "name": "Vaccine Record Book",
+      "description": "Record and track vaccination dates easily.",
+      "price": 99,
+      "category": "Health & Wellness",
+      "image": "https://example.com/vaccine-book.jpg",
+      "stock": 250
+    },
+    {
+      "id": 36,
+      "name": "Baby Nail Cutter",
+      "description": "Safe nail cutter designed for infants.",
+      "price": 99,
+      "category": "Health & Wellness",
+      "image": "https://example.com/nail-cutter.jpg",
+      "stock": 140
+    },
+    {
+      "id": 37,
+      "name": "Nasal Aspirator",
+      "description": "Gentle suction to clear baby's stuffy nose.",
+      "price": 249,
+      "category": "Health & Wellness",
+      "image": "https://example.com/nasal-aspirator.jpg",
+      "stock": 90
+    },
+    {
+      "id": 38,
+      "name": "Baby First Aid Kit",
+      "description": "Essential first aid supplies tailored for infants.",
+      "price": 599,
+      "category": "Health & Wellness",
+      "image": "https://example.com/first-aid-kit.jpg",
+      "stock": 55
+    },
+    {
+      "id": 39,
+      "name": "Medicine Dropper",
+      "description": "Calibrated dropper for accurate dosage of liquid medicine.",
+      "price": 79,
+      "category": "Health & Wellness",
+      "image": "https://example.com/medicine-dropper.jpg",
+      "stock": 180
+    }
+  ],
+  "Baby Gear & Travel": [
+    {
+      "id": 40,
+      "name": "Baby Carrier Sling",
+      "description": "Ergonomic baby sling for carrying infants safely.",
+      "price": 899,
+      "category": "Baby Gear & Travel",
+      "image": "https://example.com/baby-sling.jpg",
+      "stock": 40
+    },
+    {
+      "id": 41,
+      "name": "Baby Stroller",
+      "description": "Lightweight stroller with adjustable seating.",
+      "price": 3999,
+      "category": "Baby Gear & Travel",
+      "image": "https://example.com/stroller.jpg",
+      "stock": 25
+    },
+    {
+      "id": 42,
+      "name": "Baby Cradle",
+      "description": "Comfortable cradle with mosquito protection.",
+      "price": 2499,
+      "category": "Baby Gear & Travel",
+      "image": "https://example.com/cradle.jpg",
+      "stock": 20
+    },
+    {
+      "id": 43,
+      "name": "Baby Walker",
+      "description": "Strong and stable walker for toddlers.",
+      "price": 1299,
+      "category": "Baby Gear & Travel",
+      "image": "https://example.com/walker.jpg",
+      "stock": 35
+    },
+    {
+      "id": 44,
+      "name": "Baby Swing Chair",
+      "description": "Electric swing chair with soothing melodies.",
+      "price": 3200,
+      "category": "Baby Gear & Travel",
+      "image": "https://example.com/swing-chair.jpg",
+      "stock": 15
+    },
+    {
+      "id": 45,
+      "name": "Car Seat (Group 0+)",
+      "description": "Rear-facing infant car seat for maximum safety.",
+      "price": 12499,
+      "category": "Baby Gear & Travel",
+      "image": "https://example.com/car-seat.jpg",
+      "stock": 15
+    },
+    {
+      "id": 46,
+      "name": "Portable Changing Mat",
+      "description": "Foldable, waterproof mat for diaper changes anywhere.",
+      "price": 299,
+      "category": "Baby Gear & Travel",
+      "image": "https://example.com/changing-mat.jpg",
+      "stock": 120
+    },
+    {
+      "id": 46,
+      "name": "Diaper Bag Backpack",
+      "description": "Spacious, multi-compartment backpack for all baby essentials.",
+      "price": 1299,
+      "category": "Baby Gear & Travel",
+      "image": "https://example.com/diaper-backpack.jpg",
+      "stock": 60
+    }
+  ],
+  "Nursery & Safety": [
+    {
+      "id": 47,
+      "name": "Baby Mosquito Net",
+      "description": "Portable mosquito protection for babies.",
+      "price": 349,
+      "category": "Nursery & Safety",
+      "image": "https://example.com/mosquito-net.jpg",
+      "stock": 70
+    },
+    {
+      "id": 48,
+      "name": "Baby Bed Rail Guard",
+      "description": "Prevents infants from falling off the bed.",
+      "price": 1299,
+      "category": "Nursery & Safety",
+      "image": "https://example.com/bed-rail.jpg",
+      "stock": 30
+    },
+    {
+      "id": 49,
+      "name": "Socket Safety Covers (Pack of 10)",
+      "description": "Protects children from electrical shock.",
+      "price": 199,
+      "category": "Nursery & Safety",
+      "image": "https://example.com/socket-cover.jpg",
+      "stock": 160
+    },
+    {
+      "id": 50,
+      "name": "Anti-slip Bath Mat",
+      "description": "Ensures baby safety during bath time.",
+      "price": 249,
+      "category": "Nursery & Safety",
+      "image": "https://example.com/bath-mat.jpg",
+      "stock": 90
+    },
+    {
+      "id": 51,
+      "name": "Corner Guards (Pack of 8)",
+      "description": "Protects from sharp table edges.",
+      "price": 159,
+      "category": "Nursery & Safety",
+      "image": "https://example.com/corner-guard.jpg",
+      "stock": 200
+    },
+    {
+      "id": 52,
+      "name": "Waterproof Bed Protector",
+      "description": "Soft waterproof sheet for babies.",
+      "price": 299,
+      "category": "Nursery & Safety",
+      "image": "https://example.com/bed-protector.jpg",
+      "stock": 70
+    },
+    {
+      "id": 53,
+      "name": "Baby Room Thermometer/Humidifier",
+      "description": "Monitors room conditions and adds moisture to dry air.",
+      "price": 1999,
+      "category": "Nursery & Safety",
+      "image": "https://example.com/humidifier.jpg",
+      "stock": 25
+    },
+    {
+      "id": 54,
+      "name": "Night Light Projector",
+      "description": "Soothing night light with star projections and lullabies.",
+      "price": 699,
+      "category": "Nursery & Safety",
+      "image": "https://example.com/night-light.jpg",
+      "stock": 45
+    }
+  ],
+  "Clothing & Layette": [
+    {
+      "id": 55,
+      "name": "Baby Blanket (Cotton)",
+      "description": "Soft, breathable blanket suitable for all seasons.",
+      "price": 399,
+      "category": "Clothing & Layette",
+      "image": "https://example.com/blanket.jpg",
+      "stock": 90
+    },
+    {
+      "id": 56,
+      "name": "Baby Onesie (Pack of 3)",
+      "description": "Comfortable cotton onesies for newborns.",
+      "price": 499,
+      "category": "Clothing & Layette",
+      "image": "https://example.com/onesie-pack.jpg",
+      "stock": 110
+    },
+    {
+      "id": 57,
+      "name": "Soft Baby Towel (Set of 2)",
+      "description": "100% cotton towels for gentle baby drying.",
+      "price": 349,
+      "category": "Clothing & Layette",
+      "image": "https://example.com/baby-towel.jpg",
+      "stock": 75
+    },
+    {
+      "id": 58,
+      "name": "Baby Socks (Pack of 4)",
+      "description": "Soft cotton socks for infants.",
+      "price": 179,
+      "category": "Clothing & Layette",
+      "image": "https://example.com/baby-socks.jpg",
+      "stock": 110
+    },
+    {
+      "id": 59,
+      "name": "Baby Cap & Mittens Set",
+      "description": "Cotton cap with matching mittens.",
+      "price": 199,
+      "category": "Clothing & Layette",
+      "image": "https://example.com/cap-mittens.jpg",
+      "stock": 85
+    },
+    {
+      "id": 60,
+      "name": "Organic Cotton Bodysuits (Pack of 5)",
+      "description": "Super soft, chemical-free bodysuits for newborns.",
+      "price": 699,
+      "category": "Clothing & Layette",
+      "image": "https://example.com/organic-bodysuits.jpg",
+      "stock": 65
+    },
+    {
+      "id": 61,
+      "name": "Fleece Winter Jacket",
+      "description": "Warm and cozy jacket for cold weather.",
+      "price": 899,
+      "category": "Clothing & Layette",
+      "image": "https://example.com/winter-jacket.jpg",
+      "stock": 40
+    }
+  ],
+  "Toys & Learning": [
+    {
+      "id": 62,
+      "name": "Rattle Toy",
+      "description": "Colorful baby rattle toy for sensory development.",
+      "price": 149,
+      "category": "Toys & Learning",
+      "image": "https://example.com/rattle.jpg",
+      "stock": 95
+    },
+    {
+      "id": 63,
+      "name": "Soft Plush Teddy (Small)",
+      "description": "Cute and soft teddy bear for infants.",
+      "price": 299,
+      "category": "Toys & Learning",
+      "image": "https://example.com/teddy-small.jpg",
+      "stock": 50
+    },
+    {
+      "id": 64,
+      "name": "Teething Silicone Toy",
+      "description": "BPA-free teether for gum relief.",
+      "price": 199,
+      "category": "Toys & Learning",
+      "image": "https://example.com/teether.jpg",
+      "stock": 100
+    },
+    {
+      "id": 65,
+      "name": "Educational Flash Cards",
+      "description": "Early learning cards for infants.",
+      "price": 199,
+      "category": "Toys & Learning",
+      "image": "https://example.com/flash-cards.jpg",
+      "stock": 120
+    },
+    {
+      "id": 66,
+      "name": "ABC Learning Book",
+      "description": "Colorful ABC book for toddlers.",
+      "price": 150,
+      "category": "Toys & Learning",
+      "image": "https://example.com/abc-book.jpg",
+      "stock": 90
+    },
+    {
+      "id": 67,
+      "name": "Cloth Picture Book",
+      "description": "Soft, washable picture book.",
+      "price": 220,
+      "category": "Toys & Learning",
+      "image": "https://example.com/cloth-book.jpg",
+      "stock": 50
+    },
+    {
+      "id": 68,
+      "name": "Baby Music Toy",
+      "description": "Light and music toy for infants.",
+      "price": 350,
+      "category": "Toys & Learning",
+      "image": "https://example.com/music-toy.jpg",
+      "stock": 60
+    },
+    {
+      "id": 69,
+      "name": "Wooden Shape Sorter",
+      "description": "Educational toy for motor skills.",
+      "price": 399,
+      "category": "Toys & Learning",
+      "image": "https://example.com/shape-sorter.jpg",
+      "stock": 40
+    },
+    {
+      "id": 70,
+      "name": "Activity Gym Play Mat",
+      "description": "Mat with hanging toys to encourage reaching and rolling.",
+      "price": 1499,
+      "category": "Toys & Learning",
+      "image": "https://example.com/activity-gym.jpg",
+      "stock": 30
+    },
+    {
+      "id": 71,
+      "name": "Stacking Rings",
+      "description": "Classic stacking toy for color and size recognition.",
+      "price": 279,
+      "category": "Toys & Learning",
+      "image": "https://example.com/stacking-rings.jpg",
+      "stock": 80
+    }
+  ],
+  "Mother Care": [
+    {
+      "id": 72,
+      "name": "Breastfeeding Pillow",
+      "description": "Supportive pillow for comfortable feeding.",
+      "price": 699,
+      "category": "Mother Care",
+      "image": "https://example.com/breastfeeding-pillow.jpg",
+      "stock": 45
+    },
+    {
+      "id": 73,
+      "name": "Nursing Bra (Pack of 2)",
+      "description": "Comfortable bras designed for breastfeeding mothers.",
+      "price": 799,
+      "category": "Mother Care",
+      "image": "https://example.com/nursing-bra.jpg",
+      "stock": 70
+    },
+    {
+      "id": 74,
+      "name": "Stretch Mark Cream",
+      "description": "Maternity cream to reduce appearance of stretch marks.",
+      "price": 350,
+      "category": "Mother Care",
+      "image": "https://example.com/stretch-mark-cream.jpg",
+      "stock": 60
+    },
+    {
+      "id": 75,
+      "name": "Nursing Cover",
+      "description": "Discreet and comfortable cover for breastfeeding in public.",
+      "price": 449,
+      "category": "Mother Care",
+      "image": "https://example.com/nursing-cover.jpg",
+      "stock": 85
+    },
+    {
+      "id": 76,
+      "name": "Breast Pump (Electric)",
+      "description": "Efficient and comfortable electric breast pump.",
+      "price": 3499,
+      "category": "Mother Care",
+      "image": "https://example.com/breast-pump.jpg",
+      "stock": 20
+    },
+    {
+      "id": 77,
+      "name": "Maternity Support Belt",
+      "description": "Provides support for the back and belly during pregnancy.",
+      "price": 899,
+      "category": "Mother Care",
+      "image": "https://example.com/support-belt.jpg",
+      "stock": 35
+    }
+  ],
+  "Organic & Natural": [
+    {
+      "id": 78,
+      "name": "Organic Baby Soap (100g)",
+      "description": "Chemical-free herbal soap for babies.",
+      "price": 129,
+      "category": "Organic & Natural",
+      "image": "https://example.com/organic-soap.jpg",
+      "stock": 130
+    },
+    {
+      "id": 79,
+      "name": "Organic Baby Lotion (200ml)",
+      "description": "Naturally formulated lotion for soft skin.",
+      "price": 225,
+      "category": "Organic & Natural",
+      "image": "https://example.com/organic-lotion.jpg",
+      "stock": 85
+    },
+    {
+      "id": 80,
+      "name": "Organic Cotton Blanket",
+      "description": "Eco-friendly cotton blanket for infants.",
+      "price": 499,
+      "category": "Organic & Natural",
+      "image": "https://example.com/organic-blanket.jpg",
+      "stock": 50
+    },
+    {
+      "id": 81,
+      "name": "Organic Cotton Swaddles (Pack of 3)",
+      "description": "Large, muslin swaddles made from 100% organic cotton.",
+      "price": 799,
+      "category": "Organic & Natural",
+      "image": "https://example.com/organic-swaddles.jpg",
+      "stock": 60
+    },
+    {
+      "id": 82,
+      "name": "Natural Teething Gel",
+      "description": "Soothing, plant-based gel for sore gums.",
+      "price": 299,
+      "category": "Organic & Natural",
+      "image": "https://example.com/teething-gel.jpg",
+      "stock": 75
+    }
+  ]
+}

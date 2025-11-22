@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - {{ details.vaccine_name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                background: white !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-shadow {
+                box-shadow: none !important;
+            }
+            .print-border {
+                border: 1px solid #e5e7eb !important;
+            }
+        }
+        
+        .invoice-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .invoice-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .status-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .amount-highlight {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 16px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 py-8">
+    <div class="container mx-auto px-4">
+        <!-- Header Actions -->
+        <div class="text-center mb-8 no-print">
+            <div class="inline-flex items-center space-x-4 bg-white/90 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg">
+                <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center space-x-2 font-semibold">
+                    <i class="fas fa-print"></i>
+                    <span>Print Invoice</span>
+                </button>
+                <button onclick="window.close()" class="bg-gray-600 text-white px-6 py-3 rounded-xl hover:bg-gray-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center space-x-2 font-semibold">
+                    <i class="fas fa-times"></i>
+                    <span>Close Window</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Invoice Card -->
+        <div class="invoice-container max-w-4xl mx-auto p-8 md:p-12 print-shadow">
+            <!-- Invoice Header -->
+            <div class="flex justify-between items-start mb-12 pb-8 border-b border-gray-200">
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-4">
+                        <h1 class="text-4xl font-bold text-gray-800">INVOICE</h1>
+                        <span class="status-badge">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            PAID
+                        </span>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-gray-500 font-medium">Invoice #{{ details.id }}</p>
+                        <p class="text-gray-500">Issued: {{ details.preferred_date.strftime('%d %B %Y') }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-2xl shadow-lg">
+                        <h2 class="text-2xl font-bold">Vaccine Track</h2>
+                        <p class="text-blue-100 text-sm">Child Vaccination Services</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-blue-100 p-3 rounded-xl">
+                            <i class="fas fa-user text-blue-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700 mb-1">Billed To:</h3>
+                            <p class="font-bold text-gray-800 text-lg">{{ details.parent_name }}</p>
+                            <p class="text-gray-600">{{ details.parent_address or 'Address not provided' }}</p>
+                            <p class="text-gray-600">{{ details.parent_city or '' }}{% if details.parent_city and details.parent_state %}, {% endif %}{{ details.parent_state or '' }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3 justify-end md:justify-start">
+                        <div class="bg-green-100 p-3 rounded-xl">
+                            <i class="fas fa-user-md text-green-600 text-lg"></i>
+                        </div>
+                        <div class="text-right md:text-left">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-1">Service Provider:</h3>
+                            <p class="font-bold text-gray-800 text-lg">Dr. {{ details.doctor_name }}</p>
+                            <p class="text-gray-600">{{ details.doctor_hospital }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patient Details -->
+            <div class="mb-12">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="bg-purple-100 p-2 rounded-lg">
+                        <i class="fas fa-child text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800">Patient Information</h3>
+                </div>
+                <div class="bg-gradient-to-r from-gray-50 to-blue-50 p-6 rounded-2xl border border-gray-200">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Patient Name</p>
+                            <p class="font-semibold text-gray-800 text-lg">{{ details.child_name }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Date of Birth</p>
+                            <p class="font-semibold text-gray-800">{{ details.birth_date.strftime('%d %B %Y') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Details -->
+            <div class="mb-12">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="bg-orange-100 p-2 rounded-lg">
+                        <i class="fas fa-syringe text-orange-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800">Service Details</h3>
+                </div>
+                
+                <div class="overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-gray-50 to-blue-50">
+                            <tr>
+                                <th class="p-4 text-left text-sm font-semibold text-gray-700">Description</th>
+                                <th class="p-4 text-right text-sm font-semibold text-gray-700">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="p-4">
+                                    <div class="space-y-2">
+                                        <p class="font-semibold text-gray-800 text-lg">Vaccine: {{ details.vaccine_name }}</p>
+                                        <p class="text-sm text-gray-500 flex items-center">
+                                            <i class="fas fa-shield-alt text-blue-500 mr-2"></i>
+                                            Cost of the vaccine dose
+                                        </p>
+                                    </div>
+                                </td>
+                                <td class="p-4 text-right">
+                                    <p class="font-bold text-gray-800 text-lg">₹{{ "%.2f"|format(vaccine_price) }}</p>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="p-4">
+                                    <div class="space-y-2">
+                                        <p class="font-semibold text-gray-800 text-lg">Home Visit Service Charge</p>
+                                        <p class="text-sm text-gray-500 flex items-center">
+                                            <i class="fas fa-home text-green-500 mr-2"></i>
+                                            For {{ details.service_type }} vaccination service
+                                        </p>
+                                    </div>
+                                </td>
+                                <td class="p-4 text-right">
+                                    <p class="font-bold text-gray-800 text-lg">₹{{ "%.2f"|format(visit_charge) }}</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Total Amount -->
+            <div class="flex justify-end">
+                <div class="w-full md:w-1/2 space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-gray-600 font-medium">Subtotal</span>
+                            <span class="font-semibold text-gray-800">₹{{ "%.2f"|format(total_cost) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-gray-600 font-medium">Tax (0%)</span>
+                            <span class="font-semibold text-gray-800">₹0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-300 pt-4">
+                        <div class="amount-highlight">
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold text-gray-800">Total Amount Due</span>
+                                <span class="text-2xl font-bold text-gray-800">₹{{ "%.2f"|format(total_cost) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-16 pt-8 border-t border-gray-200">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-gray-800">Payment Information</h4>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <p class="flex items-center">
+                                <i class="fas fa-credit-card text-blue-500 mr-2 w-5"></i>
+                                Payment Method: {{ details.payment_method or 'Not specified' }}
+                            </p>
+                            <p class="flex items-center">
+                                <i class="fas fa-calendar-check text-green-500 mr-2 w-5"></i>
+                                Service Date: {{ details.preferred_date.strftime('%d %B %Y') }}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-gray-800">Terms & Conditions</h4>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <p>• Payment due upon receipt</p>
+                            <p>• Valid for tax purposes</p>
+                            <p>• Keep this invoice for your records</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Thank You Message -->
+                <div class="text-center mt-12 pt-8 border-t border-gray-200 no-print">
+                    <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6">
+                        <i class="fas fa-heart text-red-500 text-2xl mb-3"></i>
+                        <h4 class="font-semibold text-gray-800 text-lg mb-2">Thank You for Choosing Vaccine Track!</h4>
+                        <p class="text-gray-600">For any queries, please contact our support team.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Watermark -->
+            <div class="fixed bottom-10 right-10 opacity-10 no-print pointer-events-none">
+                <div class="text-6xl font-bold gradient-text transform rotate-12">
+                    PAID
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Print Button -->
+        <div class="fixed bottom-6 right-6 no-print md:hidden">
+            <button onclick="window.print()" class="bg-blue-600 text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 transition-all duration-300">
+                <i class="fas fa-print text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add print success message
+            const printButton = document.querySelector('[onclick="window.print()"]');
+            if (printButton) {
+                printButton.addEventListener('click', function() {
+                    setTimeout(() => {
+                        if (!document.hidden) {
+                            alert('Invoice sent to printer successfully!');
+                        }
+                    }, 500);
+                });
+            }
+            
+            // Add keyboard shortcut for printing
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                    e.preventDefault();
+                    window.print();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Confirmation (Cash on Delivery)</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+        <div style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
+            <h2 style="color: #4a90e2;">Order Placed Successfully!</h2>
+        </div>
+        <div style="padding: 20px 0;">
+            <p>Dear {{ parent_name }},</p>
+            <p>Thank you for your order! Your order has been placed with <strong>Cash on Delivery</strong>. Please keep the exact amount ready at the time of delivery.</p>
+            <p><strong>Order ID:</strong> #{{ order_id }}</p>
+            
+            <h3 style="color: #4a90e2; margin-top: 20px;">Order Summary:</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+                <tr style="background-color: #f9f9f9;">
+                    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">Product</th>
+                    <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">Price</th>
+                    <th style="border: 1px solid #ddd; padding: 10px; text-align: center;">Qty</th>
+                    <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">Total</th>
+                </tr>
+                {{ items_html|safe }}
+                <tr style="background-color: #f9f9f9; font-weight: bold;">
+                    <td colspan="3" style="border: 1px solid #ddd; padding: 10px; text-align: right;">Total Amount to be Paid:</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">₹{{ total }}</td>
+                </tr>
+            </table>
+
+            <h3 style="color: #4a90e2;">Shipping Address:</h3>
+            <p>
+                {{ order_details.get('full_name') }}<br>
+                {{ order_details.get('address') }}<br>
+                {{ order_details.get('city') }}, {{ order_details.get('state') }} {{ order_details.get('pincode') }}<br>
+                Phone: {{ order_details.get('phone') }}
+            </p>
+
+            <p style="margin-top: 30px;">Your order will be delivered within 3-5 business days.</p>
+        </div>
+        <div style="text-align: center; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.8em; color: #aaa;">
+            <p>&copy; {{ "now"|format_datetime("%Y") }} VaccineTrack. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

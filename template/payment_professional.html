@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaccineTrack | Secure Payment Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4a90e2;
+            --secondary: #ff7bac;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .payment-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .order-summary {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            height: fit-content;
+        }
+
+        .payment-form {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        /* Order Summary */
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--light);
+            font-size: 0.95rem;
+        }
+
+        .summary-item.total {
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .shipping-address {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .address-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        /* Payment Tabs */
+        .payment-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .payment-tab {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+            bottom: -2px;
+        }
+
+        .payment-tab:hover {
+            color: var(--primary);
+        }
+
+        .payment-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .payment-tab i {
+            margin-right: 8px;
+        }
+
+        /* Payment Content */
+        .payment-content {
+            display: none;
+        }
+
+        .payment-content.active {
+            display: block;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* UPI Section */
+        .upi-section {
+            text-align: center;
+        }
+
+        .upi-qr {
+            width: 200px;
+            height: 200px;
+            background: var(--light);
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+        }
+
+        .upi-qr img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .upi-id-input {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .upi-id-input input {
+            flex: 1;
+        }
+
+        .copy-btn {
+            padding: 12px 15px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #e66593;
+        }
+
+        .upi-apps {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .upi-app-btn {
+            padding: 12px;
+            background: var(--light);
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .upi-app-btn:hover {
+            border-color: var(--primary);
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        /* Payment Button */
+        .payment-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, #7b68ee 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .payment-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.3);
+        }
+
+        .payment-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .payment-btn i {
+            font-size: 1.1rem;
+        }
+
+        /* Security Badge */
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 6px;
+            color: var(--success);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .security-badge i {
+            font-size: 1.2rem;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { 
+                transform: rotate(360deg); 
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .payment-container {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-form,
+            .order-summary {
+                padding: 20px;
+            }
+
+            .upi-apps {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            color: #3a7bc8;
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--danger);
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body 
+    id="payment-page-data"
+    data-amount="{{ amount | default(0) }}"
+    data-order-details='{{ order_details | default({}) | tojson | safe }}'
+    data-appointment='{{ appointment_data | default({}) | tojson | safe }}'
+>
+    <div class="payment-container">
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <a href="#" class="back-btn" id="backButton">
+                <i class="fas fa-arrow-left"></i> Back to Store
+            </a>
+
+            <div class="section-title">
+                <i class="fas fa-box"></i> Order Summary
+            </div>
+
+            <div id="orderItems">Loading order items...</div>
+
+            <div class="shipping-address">
+                <div class="address-label">Shipping To:</div>
+                <div id="shippingInfo">Loading shipping information...</div>
+            </div>
+
+            <div class="summary-item">
+                <span>Subtotal</span>
+                <span id="subtotal">₹0</span>
+            </div>
+            <div class="summary-item">
+                <span>Shipping</span>
+                <span id="shippingCost">₹0</span>
+            </div>
+            <div class="summary-item total">
+                <span>Total Amount</span>
+                <span id="totalAmount">₹0</span>
+            </div>
+
+            <div class="security-badge">
+                <i class="fas fa-shield-alt"></i>
+                100% Secure & Encrypted
+            </div>
+        </div>
+
+        <!-- Payment Form -->
+        <div class="payment-form">
+            <div class="section-title">
+                <i class="fas fa-credit-card"></i> Select Payment Method
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="payment-tabs">
+                <button type="button" class="payment-tab active" data-tab="card">
+                    <i class="fas fa-credit-card"></i> Card
+                </button>
+                <button type="button" class="payment-tab" data-tab="upi">
+                    <i class="fas fa-mobile-alt"></i> UPI
+                </button>
+                <button type="button" class="payment-tab" data-tab="netbanking">
+                    <i class="fas fa-university"></i> Net Banking
+                </button>
+            </div>
+
+            <form id="paymentForm">
+                <!-- Card Payment -->
+                <div class="payment-content active" id="card">
+                    <div class="form-group">
+                        <label><i class="fas fa-credit-card"></i> Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" data-was-required="true" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Expiry Date</label>
+                            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" data-was-required="true" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-lock"></i> CVV</label>
+                            <input type="text" id="cvv" placeholder="123" maxlength="4" data-was-required="true" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Cardholder Name</label>
+                        <input type="text" id="cardName" placeholder="John Doe" data-was-required="true" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="cardEmail" placeholder="john@example.com" data-was-required="true" required>
+                    </div>
+                </div>
+
+                <!-- UPI Payment -->
+                <div class="payment-content" id="upi">
+                    <div class="upi-section">
+                        <p style="margin-bottom: 20px; color: var(--gray);">Scan this QR code with any UPI app to make payment</p>
+                        
+                        <div class="upi-qr">
+                            <img id="upiQR" src="" alt="UPI QR Code">
+                        </div>
+
+                        <p style="color: var(--gray); margin-bottom: 15px;">Or enter your UPI ID</p>
+
+                        <div class="upi-id-input">
+                            <input type="text" id="upiId" placeholder="yourname@bank" data-was-required="true">
+                            <button type="button" class="copy-btn" id="copyUpiButton">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+
+                        <p style="color: var(--gray); margin: 20px 0 15px;">Popular UPI Apps</p>
+                        <div class="upi-apps">
+                            <button type="button" class="upi-app-btn" data-app="gpay">
+                                <i class="fas fa-mobile-alt" style="color: #4285f4;"></i> Google Pay
+                            </button>
+                            <button type="button" class="upi-app-btn" data-app="phonepe">
+                                <i class="fas fa-mobile-alt" style="color: #7700ff;"></i> PhonePe
+                            </button>
+                            <button type="button" class="upi-app-btn" data-app="paytm">
+                                <i class="fas fa-mobile-alt" style="color: #002970;"></i> Paytm
+                            </button>
+                            <button type="button" class="upi-app-btn" data-app="bhim">
+                                <i class="fas fa-mobile-alt" style="color: #1f4788;"></i> BHIM
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Net Banking -->
+                <div class="payment-content" id="netbanking">
+                    <div class="form-group">
+                        <label><i class="fas fa-university"></i> Select Your Bank</label>
+                        <select id="bank" data-was-required="true">
+                            <option value="">-- Choose your bank --</option>
+                            <option value="sbi">State Bank of India (SBI)</option>
+                            <option value="hdfc">HDFC Bank</option>
+                            <option value="icici">ICICI Bank</option>
+                            <option value="axis">Axis Bank</option>
+                            <option value="bob">Bank of Baroda</option>
+                            <option value="pnb">Punjab National Bank</option>
+                            <option value="other">Other Bank</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Username</label>
+                        <input type="text" id="bankUsername" placeholder="Your bank username" data-was-required="true">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="bankPassword" placeholder="Your bank password" data-was-required="true">
+                    </div>
+
+                    <p style="color: var(--gray); font-size: 0.9rem; margin-top: 20px;">
+                        <i class="fas fa-info-circle"></i> Your banking credentials are secure and encrypted.
+                    </p>
+                </div>
+
+                <button type="submit" class="payment-btn" id="paymentBtn">
+                    <i class="fas fa-lock"></i> <span id="btnText">Pay ₹<span id="btnAmount">0</span></span>
+                </button>
+            </form>
+
+            <!-- <div class="security-badge">
+                <i class="fas fa-lock"></i> PCI DSS Compliant
+            </div> -->
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentPaymentMethod = 'card';
+        let amount = 0;
+        let orderDetails = {};
+        let appointmentData = null; // when booking an appointment
+
+        // Initialize payment page
+        function initPaymentPage() {
+            try {
+                // Get data from data-* attributes to avoid template syntax errors in JS
+                const dataContainer = document.getElementById('payment-page-data');
+                amount = parseFloat(dataContainer.dataset.amount) || 0;
+                orderDetails = JSON.parse(dataContainer.dataset.orderDetails || '{}');
+                try {
+                    appointmentData = JSON.parse(dataContainer.dataset.appointment || 'null');
+                } catch (e) {
+                    appointmentData = null;
+                }
+
+                // If orderDetails exists and has items, render store/order flow.
+                // Otherwise, if appointmentData exists, render appointment flow (vaccine price + home charge).
+                if (orderDetails && orderDetails.items && orderDetails.items.length > 0) {
+                    displayOrderSummary();
+                } else if (appointmentData && appointmentData.vaccine_name) {
+                    displayAppointmentSummary();
+                } else {
+                    // No recognizable data found — disable payment
+                    showError('No order or appointment found for payment. Please go back and try again.');
+                    document.getElementById('paymentBtn').disabled = true;
+                    return;
+                }
+                setupEventListeners();
+                
+            } catch (error) {
+                console.error('Error initializing payment page:', error);
+                showError('Failed to initialize payment page. Please refresh.');
+            }
+        }
+
+        function displayOrderSummary() {
+            const items = orderDetails.items || [];
+            let itemsHTML = '';
+            let subtotal = 0;
+
+            items.forEach(item => {
+                const itemTotal = (item.price || 0) * (item.quantity || 1);
+                subtotal += parseFloat(itemTotal);
+                itemsHTML += `
+                    <div class="summary-item" style="font-size: 0.85rem;">
+                        <span>${item.name || 'Product'} x${item.quantity || 1}</span>
+                        <span>₹${itemTotal}</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('orderItems').innerHTML = itemsHTML;
+
+            // Display shipping info
+            const shippingHTML = `
+                <strong>${orderDetails.full_name || 'Customer Name'}</strong><br>
+                ${orderDetails.address || 'Address not provided'}<br>
+                ${orderDetails.city || ''}, ${orderDetails.state || ''} ${orderDetails.pincode || ''}<br>
+                <i class="fas fa-phone"></i> ${orderDetails.phone || 'Phone not provided'}
+            `;
+            document.getElementById('shippingInfo').innerHTML = shippingHTML;
+
+            // Calculate totals
+            const shipping = subtotal > 499 || subtotal === 0 ? 0 : 50;
+            const total = parseFloat(subtotal) + parseFloat(shipping);
+
+            document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+            document.getElementById('shippingCost').textContent = shipping === 0 ? 'FREE' : `₹${shipping}`;
+            document.getElementById('totalAmount').textContent = `₹${total.toFixed(2)}`;
+            document.getElementById('btnAmount').textContent = total.toFixed(2);
+
+            // Generate UPI QR
+            generateUPIQR(total);
+        }
+
+        function displayAppointmentSummary() {
+            // Build a simple summary for appointment payments showing vaccine price and optional home charge
+            const appt = appointmentData;
+            let itemsHTML = '';
+
+            const vaccinePrice = parseFloat(appt.vaccine_price || 0);
+            const homeCharge = parseFloat(appt.home_charge || 0);
+
+            itemsHTML += `
+                <div class="summary-item">
+                    <span>${appt.vaccine_name || 'Vaccine'}</span>
+                    <span>₹${vaccinePrice.toFixed(2)}</span>
+                </div>
+            `;
+
+            if (homeCharge > 0) {
+                itemsHTML += `
+                    <div class="summary-item">
+                        <span>Home Visit Charge</span>
+                        <span>₹${homeCharge.toFixed(2)}</span>
+                    </div>
+                `;
+            }
+
+            document.getElementById('orderItems').innerHTML = itemsHTML;
+
+            // For appointments, shipping info is not applicable — show appointment date/time instead
+            const shippingHTML = `
+                <strong>Appointment for:</strong> ${appt.preferred_date || ''} at ${appt.preferred_time || ''}<br>
+                <strong>Service:</strong> ${appt.service_type || ''}
+            `;
+            document.getElementById('shippingInfo').innerHTML = shippingHTML;
+
+            const subtotal = vaccinePrice;
+            const shipping = homeCharge; // reuse shipping field to show home visit charge
+            const total = parseFloat(subtotal) + parseFloat(shipping);
+
+            document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+            document.getElementById('shippingCost').textContent = shipping === 0 ? 'FREE' : `₹${shipping.toFixed(2)}`;
+            document.getElementById('totalAmount').textContent = `₹${total.toFixed(2)}`;
+            document.getElementById('btnAmount').textContent = total.toFixed(2);
+
+            // Update back button for appointments
+            document.getElementById('backButton').innerHTML = '<i class="fas fa-arrow-left"></i> Back to Booking';
+
+            // Generate UPI QR for the payment
+            generateUPIQR(total);
+        }
+
+        function setupEventListeners() {
+            // Tab switching
+            document.querySelectorAll('.payment-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const tabName = e.target.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+
+            // UPI app buttons
+            document.querySelectorAll('.upi-app-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const app = e.target.getAttribute('data-app');
+                    openUPIApp(app);
+                });
+            });
+
+            // Copy UPI ID button
+            document.getElementById('copyUpiButton').addEventListener('click', copyUPIId);
+
+            // Back button
+            document.getElementById('backButton').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.history.back();
+            });
+
+            // Form submission
+            document.getElementById('paymentForm').addEventListener('submit', submitPayment);
+
+            // Input formatting
+            document.getElementById('cardNumber')?.addEventListener('input', formatCardNumber);
+            document.getElementById('expiry')?.addEventListener('input', formatExpiry);
+            document.getElementById('cvv')?.addEventListener('input', formatCVV);
+        }
+
+        function switchTab(tab) {
+            currentPaymentMethod = tab;
+            
+            // Update active tab
+            document.querySelectorAll('.payment-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+
+            // Update active content
+            document.querySelectorAll('.payment-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+
+            // Manage required attributes for validation
+            manageRequiredAttributes(tab);
+        }
+
+        function manageRequiredAttributes(activeTabId) {
+            // Loop through all payment content sections
+            document.querySelectorAll('.payment-content').forEach(content => {
+                const isContentActive = content.id === activeTabId;
+                // Find inputs that were originally required
+                content.querySelectorAll('[data-was-required="true"]').forEach(input => {
+                    input.required = isContentActive;
+                });
+            });
+        }
+
+        function generateUPIQR(totalAmount) {
+            try {
+                const upiString = `upi://pay?pa=vaccinetrack@upi&pn=VaccineTrack&am=${totalAmount}&tn=Order%20Payment`;
+                const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+                const qrImg = document.getElementById('upiQR');
+                qrImg.src = qrCodeUrl;
+                qrImg.alt = `UPI QR Code for ₹${totalAmount}`;
+            } catch (error) {
+                console.error('Error generating UPI QR:', error);
+            }
+        }
+
+        function copyUPIId() {
+            try {
+                const upiId = document.getElementById('upiId');
+                const upiValue = upiId.value.trim();
+                
+                if (!upiValue) {
+                    showError('Please enter a UPI ID first');
+                    return;
+                }
+
+                navigator.clipboard.writeText(upiValue).then(() => {
+                    toastr.success('UPI ID copied to clipboard!');
+                }).catch(() => {
+                    // Fallback for older browsers
+                    upiId.select();
+                    document.execCommand('copy');
+                    toastr.success('UPI ID copied to clipboard!');
+                });
+            } catch (error) {
+                console.error('Error copying UPI ID:', error);
+                toastr.error('Failed to copy UPI ID');
+            }
+        }
+
+        function openUPIApp(app) {
+            const appNames = {
+                'gpay': 'Google Pay',
+                'phonepe': 'PhonePe',
+                'paytm': 'Paytm',
+                'bhim': 'BHIM'
+            };
+            toastr.info(`Please open your ${appNames[app] || app} app and complete the payment.`, 'Action Required');
+        }
+
+        function formatCardNumber(e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
+            e.target.value = value;
+        }
+
+        function formatExpiry(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        }
+
+        function formatCVV(e) {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+        }
+
+        function submitPayment(e) {
+            e.preventDefault();
+
+            const errorMsg = document.getElementById('errorMessage');
+            errorMsg.classList.remove('show');
+
+            // Validate based on payment method
+            let isValid = true;
+            let errorMessage = '';
+
+            if (currentPaymentMethod === 'card') {
+                const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+                const expiry = document.getElementById('expiry').value;
+                const cvv = document.getElementById('cvv').value;
+                const cardName = document.getElementById('cardName').value.trim();
+                const cardEmail = document.getElementById('cardEmail').value;
+
+                if (!cardNumber || !expiry || !cvv || !cardName || !cardEmail) {
+                    errorMessage = 'Please fill in all card details';
+                    isValid = false;
+                } else if (cardNumber.length < 13 || cardNumber.length > 19) {
+                    errorMessage = 'Invalid card number';
+                    isValid = false;
+                } else if (!isValidEmail(cardEmail)) {
+                    errorMessage = 'Please enter a valid email address';
+                    isValid = false;
+                }
+            } else if (currentPaymentMethod === 'upi') {
+                const upiId = document.getElementById('upiId').value.trim();
+                if (!upiId) {
+                    errorMessage = 'Please enter your UPI ID';
+                    isValid = false;
+                } else if (!isValidUPI(upiId)) {
+                    errorMessage = 'Please enter a valid UPI ID (e.g., name@bank)';
+                    isValid = false;
+                }
+            } else if (currentPaymentMethod === 'netbanking') {
+                const bank = document.getElementById('bank').value;
+                const username = document.getElementById('bankUsername').value.trim();
+                const password = document.getElementById('bankPassword').value.trim();
+
+                if (!bank || !username || !password) {
+                    errorMessage = 'Please fill in all bank details';
+                    isValid = false;
+                }
+            }
+
+            if (!isValid) {
+                showError(errorMessage);
+                return;
+            }
+
+            processPayment();
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function isValidUPI(upi) {
+            const upiRegex = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+            return upiRegex.test(upi);
+        }
+
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            errorMsg.textContent = message;
+            errorMsg.classList.add('show');
+            toastr.error(message);
+            
+            // Scroll to error message
+            errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function processPayment() {
+            const btn = document.getElementById('paymentBtn');
+            const originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Processing...';
+
+            // Simulate payment processing
+            setTimeout(() => {
+                completePayment(btn, originalText);
+            }, 3000);
+        }
+
+        function completePayment(btn, originalText) {
+            const paymentData = {
+                payment_mode: currentPaymentMethod,
+                payment_data: {}
+            };
+
+            // Collect payment data based on the selected method
+            if (currentPaymentMethod === 'card') {
+                paymentData.payment_data = {
+                    card: 'XXXX-XXXX-XXXX-' + document.getElementById('cardNumber').value.slice(-4),
+                    email: document.getElementById('cardEmail').value
+                };
+            } else if (currentPaymentMethod === 'upi') {
+                paymentData.payment_data = {
+                    upi_id: document.getElementById('upiId').value.trim()
+                };
+            } else if (currentPaymentMethod === 'netbanking') {
+                paymentData.payment_data = {
+                    bank: document.getElementById('bank').value,
+                    username: document.getElementById('bankUsername').value.trim()
+                };
+            }
+
+            // Send payment data to the backend
+            fetch('/api/finalize_payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(paymentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toastr.success(data.message || 'Payment successful! Your order has been placed.');
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 2000);
+                } else {
+                    showError(data.error || 'Payment processing failed. Please try again.');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error finalizing payment:', error);
+                showError('An unexpected error occurred during payment finalization.');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize toastr
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                positionClass: "toast-top-right",
+                timeOut: 5000
+            };
+
+            // Set initial required attributes correctly
+            manageRequiredAttributes(currentPaymentMethod);
+
+            initPaymentPage();
+        });
+    </script>
+</body>
+</html>

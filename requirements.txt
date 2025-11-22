@@ -1,0 +1,13 @@
+Flask
+gunicorn
+mysql-connector-python
+Flask-Mail
+python-dotenv
+geopy
+fpdf
+qrcode[pil]
+Pillow
+Flask-APScheduler
+twilio
+requests
+itsdangerous

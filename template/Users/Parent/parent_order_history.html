@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - VaccineTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .status-paid {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-processing {
+            background-color: #ffedd5;
+            color: #9a3412;
+        }
+
+        .status-shipped {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-delivered {
+            background-color: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+
+        /* Additional utility classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .flex {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="{{ url_for('parent_dashboard') }}" class="text-2xl font-bold text-blue-600">
+                <i class="fas fa-syringe"></i> VaccineTrack
+            </a>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-700">Welcome, {{ parent_name }}</span>
+                <a href="{{ url_for('parent_dashboard') }}" class="text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+            <div class="flex items-center justify-between mb-8 pb-4 border-b">
+                <h1 class="text-3xl font-bold text-gray-800">
+                    <i class="fas fa-history text-blue-500 mr-3"></i>
+                    My Order History
+                </h1>
+            </div>
+
+            {% if not orders %}
+            <div class="text-center py-12">
+                <i class="fas fa-box-open text-6xl text-gray-300 mb-4"></i>
+                <h2 class="text-xl font-semibold text-gray-700">No Orders Found</h2>
+                <p class="text-gray-500 mt-2">You haven't placed any orders yet.</p>
+                <a href="{{ url_for('parent_product_store') }}"
+                    class="mt-6 inline-block bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                    Start Shopping
+                </a>
+            </div>
+            {% else %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Order ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for order in orders %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ order.id }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{
+                                order.order_date.strftime('%d %b %Y') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-semibold">₹{{
+                                "%.2f"|format(order.total_amount) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span
+                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-{{ order.status|lower }}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button type="button" onclick="viewOrderDetails('{{ order.id }}', event)"
+                                    class="text-blue-600 hover:text-blue-900 font-semibold">
+                                    View Details
+                                </button>
+                                <button type="button" onclick="reorderItems('{{ order.id }}', event)"
+                                    class="text-green-600 hover:text-green-900 ml-4 font-semibold">
+                                    <i class="fas fa-redo-alt mr-1"></i>Re-order
+                                </button>
+                                {% if order.status == 'Delivered' %}
+                                <button type="button" onclick="openProductReviewModal('{{ order.id }}')"
+                                    class="text-yellow-600 hover:text-yellow-900 ml-4 font-semibold">
+                                    <i class="fas fa-star mr-1"></i>Review
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Order Details Modal -->
+    <div id="order-details-modal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50 modal">
+        <div
+            class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full relative transform transition-all scale-95 opacity-0">
+            <button type="button" onclick="closeModal()"
+                class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6" id="modal-title">Order Details</h3>
+
+            <div id="modal-content" class="space-y-6">
+                <!-- Loading spinner -->
+                <div id="modal-loader" class="text-center py-8">
+                    <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+                    <p class="mt-2 text-gray-600">Loading details...</p>
+                </div>
+
+                <!-- Order content will be injected here -->
+                <div id="modal-order-content" style="display: none;">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">Shipping Address</h4>
+                            <div id="modal-shipping-address" class="text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">Order Summary</h4>
+                            <div id="modal-order-summary"
+                                class="text-sm text-gray-600 bg-gray-50 p-4 rounded-lg space-y-1"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mt-6 mb-2">Items Ordered</h4>
+                        <div class="border rounded-lg overflow-hidden">
+                            <table class="min-w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                            Product</th>
+                                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                                            Qty</th>
+                                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                                            Price</th>
+                                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                                            Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modal-items-table" class="divide-y divide-gray-200">
+                                    <!-- Items will be injected here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Order Tracking History -->
+                    <div id="modal-tracking-container" class="mt-6">
+                        <h4 class="font-semibold text-gray-700 mb-4">Order Tracking</h4>
+                        <div class="border-l-2 border-blue-200 ml-3">
+                            <ol id="modal-tracking-history" class="relative">
+                                <!-- Tracking steps will be injected here by JS -->
+                                <li class="mb-6 ml-6">
+                                    <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white">
+                                        <i class="fas fa-spinner fa-spin text-blue-500"></i>
+                                    </span>
+                                    <p class="text-gray-500">Loading tracking history...</p>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-right">
+                <button type="button" onclick="closeModal()"
+                    class="bg-gray-200 text-gray-800 font-semibold px-6 py-2 rounded-lg hover:bg-gray-300 transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Review Modal -->
+    <div id="product-review-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50 modal">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full relative transform transition-all scale-95 opacity-0 max-h-[90vh] flex flex-col">
+            <button type="button" onclick="closeProductReviewModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6" id="product-review-modal-title">Review Products</h3>
+            
+            <div id="product-review-modal-content" class="space-y-6 overflow-y-auto flex-grow">
+                <!-- Product review forms will be injected here -->
+            </div>
+
+            <div class="mt-8 text-right border-t pt-4">
+                <button type="button" onclick="closeProductReviewModal()" class="bg-gray-200 text-gray-800 font-semibold px-6 py-2 rounded-lg hover:bg-gray-300 transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Star Rating Input CSS (already in product_store_new.html, but good to have here for standalone use) -->
+    <style>
+        .star-rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 5px;
+        }
+        .star-rating-input input { display: none; }
+        .star-rating-input label {
+            font-size: 1.5rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .star-rating-input input:checked ~ label,
+        .star-rating-input label:hover,
+        .star-rating-input label:hover ~ label { color: #ffc107; }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+    </style>
+
+
+    <script>
+        // Global variables
+        const modal = document.getElementById('order-details-modal');
+        const modalContent = modal.querySelector('.bg-white');
+        const loader = document.getElementById('modal-loader');
+        const orderContent = document.getElementById('modal-order-content');
+
+        const productReviewModal = document.getElementById('product-review-modal');
+
+        /**
+         * Opens the modal with animation
+         */
+        function openModal() {
+            if (!modal || !modalContent) return;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        /**
+         * Closes the modal with animation
+         */
+        function closeModal() {
+            if (!modal || !modalContent) return;
+
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                // Reset modal content
+                resetModal();
+            }, 300);
+        }
+
+        /**
+         * Resets modal content to initial state
+         */
+        function resetModal() {
+            if (loader) {
+                loader.style.display = 'block';
+                loader.innerHTML = `
+                    <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+                    <p class="mt-2 text-gray-600">Loading details...</p>
+                `;
+            }
+            if (orderContent) {
+                orderContent.style.display = 'none';
+            }
+            document.getElementById('modal-title').textContent = 'Order Details';
+        }
+
+        /**
+         * Fetches and displays order details
+         * @param {number} orderId - The order ID to fetch details for
+         * @param {Event} event - The click event object
+         */
+        async function viewOrderDetails(orderId, event) {
+            event.stopPropagation(); // Prevent any other click events
+            if (!orderId) {
+                console.error('No order ID provided to viewOrderDetails');
+                return;
+            }
+
+            openModal();
+
+            if (loader) {
+                loader.style.display = 'block';
+            }
+            if (orderContent) {
+                orderContent.style.display = 'none';
+            }
+
+            try {
+                const response = await fetch(`/api/parent/order_details/${orderId}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to fetch order details.');
+                }
+
+                populateModal(data.order);
+
+            } catch (error) {
+                console.error('Error fetching order details:', error);
+                if (loader) {
+                    loader.innerHTML = `
+                        <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-2"></i>
+                        <p class="text-red-500 font-semibold">Error loading order details</p>
+                        <p class="text-gray-600 text-sm mt-1">${error.message}</p>
+                    `;
+                }
+            }
+        }
+
+        /**
+         * Fetches order items, stores them in localStorage, and redirects to the store.
+         * @param {number} orderId - The order ID to re-order.
+         * @param {Event} event - The click event object.
+         */
+        async function reorderItems(orderId, event) {
+            const reorderButton = event.currentTarget;
+            reorderButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            reorderButton.disabled = true;
+
+            try {
+                const response = await fetch(`/api/parent/order_details/${orderId}`);
+                const data = await response.json();
+
+                if (!data.success || !data.order || !data.order.items) {
+                    throw new Error('Could not retrieve order items.');
+                }
+
+                // Map items to the format expected by the cart in product_store_new.html
+                const itemsToReorder = data.order.items.map(item => ({
+                    id: item.product_id,
+                    name: item.product_name,
+                    price: parseFloat(item.price),
+                    quantity: item.quantity,
+                    // Image will be populated by the store page logic
+                }));
+
+                if (itemsToReorder.length > 0) {
+                    localStorage.setItem('reorderItems', JSON.stringify(itemsToReorder));
+                    window.location.href = "{{ url_for('parent_product_store') }}";
+                } else {
+                    throw new Error('This order contains no items to re-order.');
+                }
+            } catch (error) {
+                console.error('Re-order failed:', error);
+                alert(`Failed to re-order items: ${error.message}`);
+                reorderButton.innerHTML = '<i class="fas fa-redo-alt mr-1"></i>Re-order';
+                reorderButton.disabled = false;
+            }
+        }
+
+        /**
+         * Populates the modal with order data
+         * @param {Object} order - The order data object
+         */
+        function populateModal(order) {
+            if (!order) {
+                console.error('No order data provided');
+                return;
+            }
+
+            // Set modal title
+            const modalTitle = document.getElementById('modal-title');
+            if (modalTitle) {
+                modalTitle.textContent = `Order Details #${order.id}`;
+            }
+
+            // Populate shipping address
+            const shippingDiv = document.getElementById('modal-shipping-address');
+            if (shippingDiv) {
+                shippingDiv.innerHTML = `
+                    <strong>${order.shipping_name || 'N/A'}</strong><br>
+                    ${order.shipping_address || 'N/A'}<br>
+                    ${order.shipping_city || ''}, ${order.shipping_state || ''} - ${order.shipping_pincode || ''}<br>
+                    Phone: ${order.shipping_phone || 'N/A'}
+                `;
+            }
+
+            // Populate order summary
+            const summaryDiv = document.getElementById('modal-order-summary');
+            if (summaryDiv) {
+                const orderDate = order.order_date ?
+                    new Date(order.order_date).toLocaleDateString('en-GB', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                    }) : 'N/A';
+
+                summaryDiv.innerHTML = `
+                    <p><strong>Date:</strong> ${orderDate}</p>
+                    <p><strong>Status:</strong> <span class="font-semibold status-${(order.status || '').toLowerCase()} px-2 py-0.5 rounded-full text-xs">${order.status || 'N/A'}</span></p>
+                    <p><strong>Payment:</strong> ${order.payment_method || 'N/A'}</p>
+                    <p class="font-bold text-lg mt-2"><strong>Total:</strong> ₹${parseFloat(order.total_amount || 0).toFixed(2)}</p>
+                `;
+            }
+
+            // Populate items table
+            const itemsTable = document.getElementById('modal-items-table');
+            if (itemsTable) {
+                itemsTable.innerHTML = '';
+
+                if (order.items && Array.isArray(order.items)) {
+                    order.items.forEach(item => {
+                        const quantity = item.quantity || 0;
+                        const price = parseFloat(item.price || 0);
+                        const subtotal = quantity * price;
+
+                        const row = document.createElement('tr');
+                        row.className = 'text-sm';
+                        row.innerHTML = `
+                            <td class="px-4 py-3 text-gray-800">${item.product_name || 'Unknown Product'}</td>
+                            <td class="px-4 py-3 text-center text-gray-600">${quantity}</td>
+                            <td class="px-4 py-3 text-right text-gray-600">₹${price.toFixed(2)}</td>
+                            <td class="px-4 py-3 text-right font-semibold text-gray-800">₹${subtotal.toFixed(2)}</td>
+                        `;
+                        itemsTable.appendChild(row);
+                    });
+                } else {
+                    itemsTable.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="px-4 py-3 text-center text-gray-500">No items found</td>
+                        </tr>
+                    `;
+                }
+            }
+
+            // Populate tracking history
+            const trackingHistoryContainer = document.getElementById('modal-tracking-history');
+            if (trackingHistoryContainer) {
+                trackingHistoryContainer.innerHTML = ''; // Clear previous history
+
+                if (order.tracking_history && Array.isArray(order.tracking_history) && order.tracking_history.length > 0) {
+                    // Sort history by date, newest first
+                    const sortedHistory = order.tracking_history.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    sortedHistory.forEach((step, index) => {
+                        const stepDate = new Date(step.date).toLocaleString('en-IN', {
+                            day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true
+                        });
+                        
+                        let iconClass = 'fa-box';
+                        let iconColor = 'text-gray-500';
+                        if (step.status.toLowerCase().includes('delivered')) {
+                            iconClass = 'fa-check-circle';
+                            iconColor = 'text-green-500';
+                        } else if (step.status.toLowerCase().includes('shipped') || step.status.toLowerCase().includes('delivery')) {
+                            iconClass = 'fa-truck';
+                            iconColor = 'text-blue-500';
+                        } else if (step.status.toLowerCase().includes('processing') || step.status.toLowerCase().includes('paid')) {
+                            iconClass = 'fa-cogs';
+                            iconColor = 'text-orange-500';
+                        }
+
+                        const isFirst = index === 0;
+
+                        const historyItem = `
+                            <li class="mb-6 ml-6">
+                                <span class="absolute flex items-center justify-center w-6 h-6 ${isFirst ? 'bg-blue-100' : 'bg-gray-100'} rounded-full -left-3 ring-8 ring-white">
+                                    ${step.tracking_url ? 
+                                        `<a href="${step.tracking_url}" target="_blank" title="Track Package"><i class="fas ${iconClass} ${iconColor} hover:scale-125 transition-transform"></i></a>` :
+                                        `<i class="fas ${iconClass} ${iconColor}"></i>`
+                                    }
+                                </span>
+                                <div class="items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:flex">
+                                    <time class="mb-1 text-xs font-normal text-gray-400 sm:order-last sm:mb-0">${stepDate}</time>
+                                    <div class="text-sm font-normal text-gray-500">${step.description || step.status} <span class="font-semibold text-gray-900">${step.location || ''}</span></div>
+                                </div>
+                            </li>
+                        `;
+                        trackingHistoryContainer.innerHTML += historyItem;
+                    });
+                } else {
+                    trackingHistoryContainer.innerHTML = `
+                        <li class="ml-6 text-gray-500">No tracking history available for this order.</li>
+                    `;
+                }
+            }
+
+            // Show content, hide loader
+            if (loader) {
+                loader.style.display = 'none';
+            } 
+            const orderContentDiv = document.getElementById('modal-order-content');
+            if (orderContentDiv) {
+                orderContentDiv.style.display = 'block';
+            } 
+        }
+
+        /**
+         * Opens the product review modal and fetches order items.
+         * @param {number} orderId - The order ID to review.
+         */
+        async function openProductReviewModal(orderId) {
+            const modal = document.getElementById('product-review-modal');
+            const modalContent = modal.querySelector('.bg-white');
+            const reviewContentDiv = document.getElementById('product-review-modal-content');
+            reviewContentDiv.innerHTML = '<p>Loading products...</p>';
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            try {
+                const response = await fetch(`/api/parent/order_details/${orderId}`);
+                const data = await response.json();
+
+                if (!data.success || !data.order || !data.order.items) {
+                    throw new Error('Could not retrieve order items for review.');
+                }
+
+                document.getElementById('product-review-modal-title').textContent = `Review Products from Order #${orderId}`;
+                reviewContentDiv.innerHTML = ''; // Clear loading message
+
+                data.order.items.forEach(item => {
+                    // The backend should ideally return a 'review' object within each item if it exists.
+                    // Example: item.review = { rating: 5, review_title: "Excellent", review_text: "Loved it." }
+                    const existingReview = item.review; // Assuming the API provides this
+
+                    // If a review exists, show the review display. Otherwise, show the form.
+                    const reviewFormHTML = `
+                        <div class="border rounded-lg p-4" id="review-form-for-product-${item.product_id}">
+                            <h4 class="font-semibold text-lg mb-2">${item.product_name}</h4>
+                            <form class="product-review-form" onsubmit="submitProductReview(event, ${item.product_id})">
+                                <div class="form-group">
+                                    <label>Your Rating*</label>
+                                    <div class="star-rating-input">
+                                        <input type="radio" id="star5-${item.product_id}" name="rating-${item.product_id}" value="5" required/><label for="star5-${item.product_id}" title="5 stars">★</label>
+                                        <input type="radio" id="star4-${item.product_id}" name="rating-${item.product_id}" value="4" /><label for="star4-${item.product_id}" title="4 stars">★</label>
+                                        <input type="radio" id="star3-${item.product_id}" name="rating-${item.product_id}" value="3" /><label for="star3-${item.product_id}" title="3 stars">★</label>
+                                        <input type="radio" id="star2-${item.product_id}" name="rating-${item.product_id}" value="2" /><label for="star2-${item.product_id}" title="2 stars">★</label>
+                                        <input type="radio" id="star1-${item.product_id}" name="rating-${item.product_id}" value="1" /><label for="star1-${item.product_id}" title="1 star">★</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reviewTitle-${item.product_id}">Review Title</label>
+                                    <input type="text" id="reviewTitle-${item.product_id}" class="w-full p-2 border rounded">
+                                </div>
+                                <div class="form-group">
+                                    <label for="reviewText-${item.product_id}">Your Review</label>
+                                    <textarea id="reviewText-${item.product_id}" rows="3" class="w-full p-2 border rounded"></textarea>
+                                </div>
+                                <button type="submit" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 transition">Submit Review</button>
+                            </form>
+                        </div>
+                    `;
+                    reviewContentDiv.innerHTML += reviewFormHTML;
+                });
+
+            } catch (error) {
+                console.error('Error opening review modal:', error);
+                reviewContentDiv.innerHTML = `<p class="text-red-500">${error.message}</p>`;
+            }
+        }
+
+        /**
+         * Generates HTML to display an existing review.
+         * @param {object} review - The review object { rating, review_title, review_text }.
+         * @param {number} productId - The product ID.
+         * @returns {string} - The HTML string for the review display.
+         */
+        function generateReviewDisplayHTML(review, productId) {
+            const starsHTML = [...Array(5)].map((_, i) => 
+                `<i class="fas fa-star ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'}"></i>`
+            ).join('');
+
+            return `
+                <div class="space-y-3">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Your Rating:</p>
+                        <div class="flex items-center text-lg">${starsHTML}</div>
+                    </div>
+                    ${review.review_title ? `
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Title:</p>
+                        <p class="font-semibold text-gray-800">${review.review_title}</p>
+                    </div>` : ''}
+                    ${review.review_text ? `
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Review:</p>
+                        <p class="text-gray-700">${review.review_text}</p>
+                    </div>` : ''}
+                    <div class="text-right mt-2">
+                        <button onclick='showEditReviewForm(${productId}, ${JSON.stringify(review)})' class="text-blue-600 hover:text-blue-800 font-semibold text-sm">
+                            <i class="fas fa-edit mr-1"></i>Edit Review
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * Shows the review form, pre-filled with existing review data.
+         * @param {number} productId - The product ID.
+         * @param {object} review - The existing review data.
+         */
+        function showEditReviewForm(productId, review) {
+            const container = document.getElementById(`review-form-for-product-${productId}`);
+            if (!container) return;
+
+            const formHTML = `
+                <h4 class="font-semibold text-lg mb-2">${container.querySelector('h4').textContent}</h4>
+                <form class="product-review-form" onsubmit="submitProductReview(event, ${productId})">
+                    <div class="form-group">
+                        <label>Your Rating*</label>
+                        <div class="star-rating-input">
+                            <input type="radio" id="star5-${productId}" name="rating-${productId}" value="5" required ${review.rating == 5 ? 'checked' : ''}/><label for="star5-${productId}" title="5 stars">★</label>
+                            <input type="radio" id="star4-${productId}" name="rating-${productId}" value="4" ${review.rating == 4 ? 'checked' : ''}/><label for="star4-${productId}" title="4 stars">★</label>
+                            <input type="radio" id="star3-${productId}" name="rating-${productId}" value="3" ${review.rating == 3 ? 'checked' : ''}/><label for="star3-${productId}" title="3 stars">★</label>
+                            <input type="radio" id="star2-${productId}" name="rating-${productId}" value="2" ${review.rating == 2 ? 'checked' : ''}/><label for="star2-${productId}" title="2 stars">★</label>
+                            <input type="radio" id="star1-${productId}" name="rating-${productId}" value="1" ${review.rating == 1 ? 'checked' : ''}/><label for="star1-${productId}" title="1 star">★</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewTitle-${productId}">Review Title</label>
+                        <input type="text" id="reviewTitle-${productId}" class="w-full p-2 border rounded" value="${review.review_title || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewText-${productId}">Your Review</label>
+                        <textarea id="reviewText-${productId}" rows="3" class="w-full p-2 border rounded">${review.review_text || ''}</textarea>
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 transition">Update Review</button>
+                </form>
+            `;
+            container.innerHTML = formHTML;
+        }
+
+        /**
+         * Closes the product review modal.
+         */
+        function closeProductReviewModal() {
+            const modal = document.getElementById('product-review-modal');
+            const modalContent = modal.querySelector('.bg-white');
+
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        /**
+         * Submits a review for a single product.
+         * @param {Event} event - The form submission event.
+         * @param {number} productId - The ID of the product being reviewed.
+         */
+        async function submitProductReview(event, productId) {
+            event.preventDefault();
+            const form = event.target;
+            const rating = form.querySelector(`input[name="rating-${productId}"]:checked`)?.value;
+            const reviewTitle = form.querySelector(`#reviewTitle-${productId}`).value;
+            const reviewText = form.querySelector(`#reviewText-${productId}`).value;
+
+            if (!rating) {
+                alert('Please select a star rating.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/submit_product_review', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_id: productId, rating, review_title: reviewTitle, review_text: reviewText })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                    // Instead of just a thank you message, show the review they just submitted.
+                    const reviewContainer = document.getElementById(`review-form-for-product-${productId}`);
+                    const updatedReview = { rating, review_title: reviewTitle, review_text: reviewText };
+                    const productName = reviewContainer.querySelector('h4').textContent;
+                    
+                    reviewContainer.innerHTML = `<h4 class="font-semibold text-lg mb-2">${productName}</h4>` + generateReviewDisplayHTML(updatedReview, productId);
+
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                alert(error.message || 'Failed to submit review.');
+            }
+        }
+
+        // Event Listeners
+
+        // Close modal on background click
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+        if (productReviewModal) {
+            productReviewModal.addEventListener('click', (e) => {
+                if (e.target === productReviewModal) closeProductReviewModal();
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && modal && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+            if (e.key === "Escape" && productReviewModal && !productReviewModal.classList.contains('hidden')) {
+                closeProductReviewModal();
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Order History page loaded successfully');
+
+            // Add any additional initialization code here
+            if (modal) {
+                resetModal();
+            }
+        });
+
+        // Error boundary for template variables (for development)
+        window.addEventListener('error', function (e) {
+            console.error('Global error:', e.error);
+        });
+    </script>
+
+</body>
+
+</html>

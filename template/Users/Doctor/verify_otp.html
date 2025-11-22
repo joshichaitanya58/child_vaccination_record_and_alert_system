@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP - Child Vaccination System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+</head>
+
+<body class="text-gray-800 bg-gray-50">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="{{ url_for('home') }}" class="text-2xl font-bold text-blue-600">
+                <img src="https://placehold.co/40x40/4a90e2/ffffff?text=CS" alt="Logo"
+                    class="inline-block mr-2 rounded-full">
+                <span>VACCINE TRACK</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="mt-20 min-h-screen flex items-center justify-center py-12 px-4">
+        <div class="max-w-md w-full space-y-8">
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">
+                        Verify Your Account
+                    </h2>
+                    <p class="mt-2 text-gray-600">
+                        An OTP has been sent to <strong>{{ email }}</strong>.
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        Please enter the 6-digit code to complete your {{ action }}.
+                    </p>
+                </div>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="mb-4">
+                    {% for category, message in messages %}
+                    <div
+                        class="p-3 rounded-md text-sm {% if category == 'error' %}bg-red-100 text-red-700{% elif category == 'success' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                        {{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+                <form class="space-y-6" action="{{ url_for(user_type + '_verify_' + action + '_otp') }}" method="POST">
+                    <div>
+                        <label for="otp" class="block text-sm font-medium text-gray-700 mb-2">Enter OTP</label>
+                        <input id="otp" name="otp" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
+                            required
+                            class="relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-green-500 focus:border-green-500 text-center text-xl tracking-widest"
+                            placeholder="______" autofocus>
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 shadow-md">
+                            Verify & Continue
+                        </button>
+                    </div>
+                </form>
+                <div id="resend-otp-container" class="mt-6 text-center" data-user-type="{{ user_type }}"
+                    data-action="{{ action }}">
+                    <p class="text-sm text-gray-600">
+                        Didn't receive the OTP?
+                        <a href="#" id="resend-otp-link" class="font-medium text-green-600 hover:text-green-500">Resend
+                            OTP</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-2">&copy; 2024 Child Vaccination System. All rights reserved.</p>
+            <p class="text-sm text-gray-400">
+                <a href="{{ url_for('admin_login') }}" class="hover:text-white">Admin Login</a>
+            </p>
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='JS/verify_otp.js') }}"></script>
+</body>
+
+</html>
